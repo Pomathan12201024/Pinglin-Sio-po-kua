@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電音拼貼</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; padding-bottom: 100px; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header a { text-decoration: none; color: #0a84ff; font-weight: bold; font-size: 1.1rem; display: inline-block; margin-bottom: 10px; }
+        .slot-container { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; }
+        .slot { background-color: #2c2c2e; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
+        .slot.active { border-color: #0a84ff; background-color: #1c1c1e; }
+        .slot-info h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
+        .slot-info p { margin: 0; color: #8e8e93; font-size: 0.9rem; }
+        .global-play-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(28, 28, 30, 0.95); padding: 20px; box-sizing: border-box; display: flex; justify-content: center; border-top: 1px solid #333; }
+        .btn-global-play { background-color: #30d158; color: black; font-size: 1.3rem; font-weight: bold; padding: 15px 40px; border-radius: 30px; border: none; width: 100%; max-width: 400px; opacity: 0.4; pointer-events: none; transition: all 0.3s; }
+        .btn-global-play.ready { opacity: 1; pointer-events: auto; cursor: pointer; box-shadow: 0 0 15px rgba(48, 209, 88, 0.4); }
+        .btn-global-play.playing { background-color: #ff453a; box-shadow: 0 0 15px rgba(255, 69, 58, 0.4); color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.show { display: flex; }
+        .modal-content { background: #1c1c1e; width: 90%; max-width: 400px; border-radius: 16px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .modal-header h3 { margin: 0; }
+        .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .option-item { background: #2c2c2e; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .option-controls { display: flex; align-items: center; gap: 15px; }
+        .preview-btn { background: #0a84ff; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+        .select-btn { background: white; color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" id="ui-back">← 回到主頁</a>
+        <h2 id="ui-title">你的拼貼工作站</h2>
+        <p style="color:#888; font-size:0.9rem;" id="ui-desc">點擊下方區塊選擇素材，全部選滿即可播放</p>
+    </div>
+
+    <div class="slot-container">
+        <div class="slot" id="slot-drums" onclick="openModal('drums')">
+            <div class="slot-info">
+                <h3 id="ui-slot-drums">🥁 鼓組 (Drums)</h3>
+                <p id="label-drums" class="label-status">尚未選擇...</p>
+            </div>
+            <div class="slot-icon">➕</div>
+        </div>
+        
+        <div class="slot" id="slot-bass" onclick="openModal('bass')">
+            <div class="slot-info">
+                <h3 id="ui-slot-bass">🎸 低音 (Sub Bass)</h3>
+                <p id="label-bass" class="label-status">尚未選擇...</p>
+            </div>
+            <div class="slot-icon">➕</div>
+        </div>
+
+        <div class="slot" id="slot-chords" onclick="openModal('chords')">
+            <div class="slot-info">
+                <h3 id="ui-slot-chords">🎹 和弦 (Chords)</h3>
+                <p id="label-chords" class="label-status">尚未選擇...</p>
+            </div>
+            <div class="slot-icon">➕</div>
+        </div>
+    </div>
+
+    <div class="global-play-container">
+        <button id="globalPlayBtn" class="btn-global-play">需填滿所有軌道</button>
+    </div>
+
+    <div id="selectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">選擇素材</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalList"></div>
+        </div>
+    </div>
+
+    <script>
+        const lang = localStorage.getItem('prefLang') || 'zh';
+
+        // 語言字典：包含 UI 與動態按鈕文字
+        const dict = {
+            'zh': {
+                'back': '← 回到主頁', 'title': '你的拼貼工作站', 'desc': '點擊下方區塊選擇素材，全部選滿即可播放',
+                'slotDrums': '🥁 鼓組 (Drums)', 'slotBass': '🎸 低音 (Sub Bass)', 'slotChords': '🎹 和弦 (Chords)',
+                'notSelected': '尚未選擇...', 'btnNotReady': '需填滿所有軌道', 'btnPlay': '▶ 共同播放',
+                'btnStop': '⏸ 停止播放', 'btnLoading': '載入對軌中...',
+                'modalSelect': '選擇', 'selectedMark': '✅ 目前選擇', 'selectBtn': '選擇'
+            },
+            'en': {
+                'back': '← Back to Home', 'title': 'Your Collage Station', 'desc': 'Click slots below to select materials. Fill all to play.',
+                'slotDrums': '🥁 Drums', 'slotBass': '🎸 Sub Bass', 'slotChords': '🎹 Chords',
+                'notSelected': 'Not selected...', 'btnNotReady': 'Fill all tracks', 'btnPlay': '▶ Play All',
+                'btnStop': '⏸ Stop', 'btnLoading': 'Loading sync...',
+                'modalSelect': 'Select ', 'selectedMark': '✅ Selected', 'selectBtn': 'Select'
+            }
+        };
+
+        // 雙語版素材資料庫
+        const library = {
+            drums: [
+                { id: 'd1', name: { 'zh': '動力重拍 (Power Beat)', 'en': 'Power Beat' }, url: 'audio/drums1.mp3' },
+                { id: 'd2', name: { 'zh': '輕快碎拍 (Breakbeat)', 'en': 'Breakbeat' }, url: 'audio/drums2.mp3' }
+            ],
+            bass: [
+                { id: 'b1', name: { 'zh': '深沉低頻 (Deep Sub)', 'en': 'Deep Sub' }, url: 'audio/bass1.mp3' },
+                { id: 'b2', name: { 'zh': '顆粒合成器 (Gritty Synth)', 'en': 'Gritty Synth' }, url: 'audio/bass2.mp3' }
+            ],
+            chords: [
+                { id: 'c1', name: { 'zh': '迷幻和弦 (Ambient Pad)', 'en': 'Ambient Pad' }, url: 'audio/chords1.mp3' },
+                { id: 'c2', name: { 'zh': '明亮跳躍 (Stab Chords)', 'en': 'Stab Chords' }, url: 'audio/chords2.mp3' }
+            ]
+        };
+
+        // 初始化靜態介面語言
+        document.getElementById('ui-back').innerText = dict[lang].back;
+        document.getElementById('ui-title').innerText = dict[lang].title;
+        document.getElementById('ui-desc').innerText = dict[lang].desc;
+        document.getElementById('ui-slot-drums').innerText = dict[lang].slotDrums;
+        document.getElementById('ui-slot-bass').innerText = dict[lang].slotBass;
+        document.getElementById('ui-slot-chords').innerText = dict[lang].slotChords;
+        document.querySelectorAll('.label-status').forEach(el => el.innerText = dict[lang].notSelected);
+        document.getElementById('globalPlayBtn').innerText = dict[lang].btnNotReady;
+
+        let currentSelection = { drums: null, bass: null, chords: null };
+        let activeCategory = ''; 
+        let previewAudio = new Audio(); 
+        let tonePlayers = {}; 
+
+        const modal = document.getElementById('selectionModal');
+        const modalList = document.getElementById('modalList');
+        const modalTitle = document.getElementById('modalTitle');
+        const globalPlayBtn = document.getElementById('globalPlayBtn');
+
+        function openModal(category) {
+            activeCategory = category;
+            const catName = category === 'drums' ? dict[lang].slotDrums : (category === 'bass' ? dict[lang].slotBass : dict[lang].slotChords);
+            modalTitle.innerText = dict[lang].modalSelect + ' ' + catName;
+            
+            modalList.innerHTML = '';
+            library[category].forEach(item => {
+                const isSelected = currentSelection[category] && currentSelection[category].id === item.id;
+                const itemName = item.name[lang]; // 抓取對應語言的名字
+                
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.innerHTML = `
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; margin-bottom:5px;">${itemName}</div>
+                        ${isSelected ? `<span style="font-size:0.8rem; color:#30d158;">${dict[lang].selectedMark}</span>` : ''}
+                    </div>
+                    <div class="option-controls">
+                        <button class="preview-btn" onclick="togglePreview('${item.url}', this)">▶</button>
+                        <button class="select-btn" onclick="selectItem('${item.id}', '${itemName}', '${item.url}')">${dict[lang].selectBtn}</button>
+                    </div>
+                `;
+                modalList.appendChild(div);
+            });
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+            previewAudio.pause();
+        }
+
+        function togglePreview(url, btn) {
+            if (previewAudio.src && previewAudio.src.includes(url) && !previewAudio.paused) {
+                previewAudio.pause(); btn.innerText = '▶';
+            } else {
+                previewAudio.src = url; previewAudio.play();
+                document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
+                btn.innerText = '⏸';
+            }
+        }
+
+        function selectItem(id, name, url) {
+            currentSelection[activeCategory] = { id, name, url };
+            document.getElementById(`label-${activeCategory}`).innerText = name;
+            document.getElementById(`slot-${activeCategory}`).classList.add('active');
+            closeModal();
+            checkReadyStatus();
+        }
+
+        function checkReadyStatus() {
+            const isReady = currentSelection.drums && currentSelection.bass && currentSelection.chords;
+            if (isReady && !isPlaying) {
+                globalPlayBtn.classList.add('ready');
+                globalPlayBtn.innerText = dict[lang].btnPlay;
+            }
+        }
+
+        let isPlaying = false;
+
+        globalPlayBtn.addEventListener('click', async () => {
+            if (!currentSelection.drums || !currentSelection.bass || !currentSelection.chords) return;
+
+            if (isPlaying) {
+                Tone.Transport.stop();
+                globalPlayBtn.classList.remove('playing');
+                globalPlayBtn.innerText = dict[lang].btnPlay;
+                isPlaying = false;
+                return;
+            }
+
+            globalPlayBtn.innerText = dict[lang].btnLoading;
+            await Tone.start();
+            Tone.Transport.stop(); 
+
+            Object.values(tonePlayers).forEach(player => player.dispose());
+            tonePlayers = {};
+
+            tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
+            tonePlayers.bass = new Tone.Player(currentSelection.bass.url).toDestination().sync().start(0);
+            tonePlayers.chords = new Tone.Player(currentSelection.chords.url).toDestination().sync().start(0);
+
+            tonePlayers.drums.loop = true;
+            tonePlayers.bass.loop = true;
+            tonePlayers.chords.loop = true;
+
+            await Tone.loaded();
+            Tone.Transport.start();
+            
+            globalPlayBtn.classList.add('playing');
+            globalPlayBtn.innerText = dict[lang].btnStop;
+            isPlaying = true;
+        });
+    </script>
+</body>
+</html>

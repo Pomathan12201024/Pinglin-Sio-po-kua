@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>介紹原始素材</title>
+    <style>
+        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f7; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; position: relative; }
+        .header a { text-decoration: none; color: #007aff; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        .item-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 500px; margin-left: auto; margin-right: auto; }
+        .item-img { width: 100%; height: 180px; background-color: #e5e5ea; border-radius: 10px; object-fit: cover; margin-bottom: 15px; }
+        .item-title { font-size: 1.3rem; margin: 0 0 10px 0; color: #1c1c1e; }
+        .item-desc { color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        .listen-btn { display: block; text-align: center; background-color: #af52de; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" data-i18n="back">← 回到主頁</a>
+        <h2 data-i18n="title">認識聲音素材</h2>
+    </div>
+
+    <div class="item-card">
+        <img src="" alt="Drums" class="item-img">
+        <h3 class="item-title" data-i18n="item1Title">動力鼓組 (Drums)</h3>
+        <p class="item-desc" data-i18n="item1Desc">這是整首曲子的心跳。透過強烈的 Kick 與俐落的 Hi-hat 交織，提供穩定的律動基礎。</p>
+        <a href="listen.html?sound=drums" class="listen-btn" data-i18n="btnListen">🎧 前往聆聽</a>
+    </div>
+
+    <div class="item-card">
+        <img src="" alt="Bass" class="item-img">
+        <h3 class="item-title" data-i18n="item2Title">深沉低音 (Sub Bass)</h3>
+        <p class="item-desc" data-i18n="item2Desc">填補低頻的空間，使用顆粒感極重的合成器音色，為音樂鋪上一層渾厚的底盤。</p>
+        <a href="listen.html?sound=bass" class="listen-btn" data-i18n="btnListen">🎧 前往聆聽</a>
+    </div>
+
+    <script>
+        const dict = {
+            'zh': {
+                'back': '← 回到主頁',
+                'title': '認識聲音素材',
+                'item1Title': '動力鼓組 (Drums)',
+                'item1Desc': '這是整首曲子的心跳。透過強烈的 Kick 與俐落的 Hi-hat 交織，提供穩定的律動基礎。',
+                'item2Title': '深沉低音 (Sub Bass)',
+                'item2Desc': '填補低頻的空間，使用顆粒感極重的合成器音色，為音樂鋪上一層渾厚的底盤。',
+                'btnListen': '🎧 前往聆聽'
+            },
+            'en': {
+                'back': '← Back to Home',
+                'title': 'Meet the Sounds',
+                'item1Title': 'Power Drums',
+                'item1Desc': 'The heartbeat of the track. A blend of punchy kicks and crisp hi-hats provides a stable rhythmic foundation.',
+                'item2Title': 'Sub Bass',
+                'item2Desc': 'Fills the low-end space with a gritty synthesizer tone, laying down a thick, resonant foundation.',
+                'btnListen': '🎧 Listen'
+            }
+        };
+
+        const savedLang = localStorage.getItem('prefLang') || 'zh';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if(dict[savedLang][key]) el.innerText = dict[savedLang][key];
+        });
+    </script>
+</body>
+</html>
