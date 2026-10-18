@@ -120,12 +120,12 @@
         document.getElementById('ui-title').innerText = dict[lang].title;
         document.getElementById('ui-desc').innerText = dict[lang].desc;
         document.getElementById('ui-slot-drums').innerText = dict[lang].slotDrums;
-        document.getElementById('ui-slot-bass').innerText = dict[lang].slotBass;
-        document.getElementById('ui-slot-chords').innerText = dict[lang].slotChords;
+        document.getElementById('ui-slot-lead').innerText = dict[lang].slotlead;
+        document.getElementById('ui-slot-pad').innerText = dict[lang].slotpad;
         document.querySelectorAll('.label-status').forEach(el => el.innerText = dict[lang].notSelected);
         document.getElementById('globalPlayBtn').innerText = dict[lang].btnNotReady;
 
-        let currentSelection = { drums: null, bass: null, chords: null };
+        let currentSelection = { drums: null, lead: null, pad: null };
         let activeCategory = ''; 
         let previewAudio = new Audio(); 
         let tonePlayers = {}; 
@@ -137,7 +137,7 @@
 
         function openModal(category) {
             activeCategory = category;
-            const catName = category === 'drums' ? dict[lang].slotDrums : (category === 'bass' ? dict[lang].slotBass : dict[lang].slotChords);
+            const catName = category === 'drums' ? dict[lang].slotDrums : (category === 'lead' ? dict[lang].slotlead : dict[lang].slotpad);
             modalTitle.innerText = dict[lang].modalSelect + ' ' + catName;
             
             modalList.innerHTML = '';
@@ -186,7 +186,7 @@
         }
 
         function checkReadyStatus() {
-            const isReady = currentSelection.drums && currentSelection.bass && currentSelection.chords;
+            const isReady = currentSelection.drums && currentSelection.lead && currentSelection.pad;
             if (isReady && !isPlaying) {
                 globalPlayBtn.classList.add('ready');
                 globalPlayBtn.innerText = dict[lang].btnPlay;
@@ -196,7 +196,7 @@
         let isPlaying = false;
 
         globalPlayBtn.addEventListener('click', async () => {
-            if (!currentSelection.drums || !currentSelection.bass || !currentSelection.chords) return;
+            if (!currentSelection.drums || !currentSelection.lead || !currentSelection.pad) return;
 
             if (isPlaying) {
                 Tone.Transport.stop();
@@ -214,12 +214,12 @@
             tonePlayers = {};
 
             tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
-            tonePlayers.bass = new Tone.Player(currentSelection.bass.url).toDestination().sync().start(0);
-            tonePlayers.chords = new Tone.Player(currentSelection.chords.url).toDestination().sync().start(0);
+            tonePlayers.lead = new Tone.Player(currentSelection.lead.url).toDestination().sync().start(0);
+            tonePlayers.pad = new Tone.Player(currentSelection.pad.url).toDestination().sync().start(0);
 
             tonePlayers.drums.loop = true;
-            tonePlayers.bass.loop = true;
-            tonePlayers.chords.loop = true;
+            tonePlayers.lead.loop = true;
+            tonePlayers.pad.loop = true;
 
             await Tone.loaded();
             Tone.Transport.start();
