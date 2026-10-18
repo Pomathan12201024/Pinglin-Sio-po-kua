@@ -41,24 +41,24 @@
     <div class="slot-container">
         <div class="slot" id="slot-drums" onclick="openModal('drums')">
             <div class="slot-info">
-                <h3 id="ui-slot-drums">🥁 鼓組 (Drums)</h3>
+                <h3 id="ui-slot-drums">相褒歌鼓組</h3>
                 <p id="label-drums" class="label-status">尚未選擇...</p>
             </div>
             <div class="slot-icon">➕</div>
         </div>
         
-        <div class="slot" id="slot-bass" onclick="openModal('bass')">
+        <div class="slot" id="slot-lead" onclick="openModal('lead')">
             <div class="slot-info">
-                <h3 id="ui-slot-bass">🎸 低音 (Sub Bass)</h3>
-                <p id="label-bass" class="label-status">尚未選擇...</p>
+                <h3 id="ui-slot-lead">相褒歌主旋律</h3>
+                <p id="label-lead" class="label-status">尚未選擇...</p>
             </div>
             <div class="slot-icon">➕</div>
         </div>
 
-        <div class="slot" id="slot-chords" onclick="openModal('chords')">
+        <div class="slot" id="slot-pad" onclick="openModal('pad')">
             <div class="slot-info">
-                <h3 id="ui-slot-chords">🎹 和弦 (Chords)</h3>
-                <p id="label-chords" class="label-status">尚未選擇...</p>
+                <h3 id="ui-slot-pad">坪林河流</h3>
+                <p id="label-pad" class="label-status">尚未選擇...</p>
             </div>
             <div class="slot-icon">➕</div>
         </div>
@@ -85,14 +85,14 @@
         const dict = {
             'zh': {
                 'back': '← 回到主頁', 'title': '你的拼貼工作站', 'desc': '點擊下方區塊選擇素材，全部選滿即可播放',
-                'slotDrums': '🥁 鼓組 (Drums)', 'slotBass': '🎸 低音 (Sub Bass)', 'slotChords': '🎹 和弦 (Chords)',
+                'slotDrums': '相褒歌鼓組', 'slotlead': '相褒歌主旋律', 'slotpad': '坪林河流',
                 'notSelected': '尚未選擇...', 'btnNotReady': '需填滿所有軌道', 'btnPlay': '▶ 共同播放',
                 'btnStop': '⏸ 停止播放', 'btnLoading': '載入對軌中...',
                 'modalSelect': '選擇', 'selectedMark': '✅ 目前選擇', 'selectBtn': '選擇'
             },
             'en': {
                 'back': '← Back to Home', 'title': 'Your Collage Station', 'desc': 'Click slots below to select materials. Fill all to play.',
-                'slotDrums': '🥁 Drums', 'slotBass': '🎸 Sub Bass', 'slotChords': '🎹 Chords',
+                'slotDrums': 'Drums', 'slotlead': 'lead', 'slotpad': 'pad',
                 'notSelected': 'Not selected...', 'btnNotReady': 'Fill all tracks', 'btnPlay': '▶ Play All',
                 'btnStop': '⏸ Stop', 'btnLoading': 'Loading sync...',
                 'modalSelect': 'Select ', 'selectedMark': '✅ Selected', 'selectBtn': 'Select'
@@ -102,16 +102,16 @@
         // 雙語版素材資料庫
         const library = {
             drums: [
-                { id: 'd1', name: { 'zh': '動力重拍 (Power Beat)', 'en': 'Power Beat' }, url: 'audio/drums1.mp3' },
-                { id: 'd2', name: { 'zh': '輕快碎拍 (Breakbeat)', 'en': 'Breakbeat' }, url: 'audio/drums2.mp3' }
+                { id: 'd1', name: { 'zh': '鼓組', 'en': 'drum' }, url: 'sio po kua drum.mp3' },
+                { id: 'd2', name: { 'zh': '無', 'en': 'none' }, url: 'audio/drums2.mp3' }
             ],
-            bass: [
-                { id: 'b1', name: { 'zh': '深沉低頻 (Deep Sub)', 'en': 'Deep Sub' }, url: 'audio/bass1.mp3' },
-                { id: 'b2', name: { 'zh': '顆粒合成器 (Gritty Synth)', 'en': 'Gritty Synth' }, url: 'audio/bass2.mp3' }
+            lead: [
+                { id: 'b1', name: { 'zh': '主旋律', 'en': 'lead' }, url: 'sio po kua lead.mp3' },
+                { id: 'b2', name: { 'zh': '無', 'en': 'none' }, url: 'audio/bass2.mp3' }
             ],
-            chords: [
-                { id: 'c1', name: { 'zh': '迷幻和弦 (Ambient Pad)', 'en': 'Ambient Pad' }, url: 'audio/chords1.mp3' },
-                { id: 'c2', name: { 'zh': '明亮跳躍 (Stab Chords)', 'en': 'Stab Chords' }, url: 'audio/chords2.mp3' }
+            pad: [
+                { id: 'c1', name: { 'zh': '河流', 'en': 'river' }, url: 'sio po kua river.mp3' },
+                { id: 'c2', name: { 'zh': '無', 'en': 'none' }, url: 'audio/chords2.mp3' }
             ]
         };
 
