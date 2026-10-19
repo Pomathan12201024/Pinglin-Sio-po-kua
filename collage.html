@@ -136,15 +136,19 @@
         let activeCategory = ''; 
         let previewAudio = new Audio(); 
         let tonePlayers = {}; 
-        let isPlaying = false; // 宣告狀態變數
+        let isPlaying = false;
 
         const modal = document.getElementById('selectionModal');
         const modalList = document.getElementById('modalList');
         const modalTitle = document.getElementById('modalTitle');
         const globalPlayBtn = document.getElementById('globalPlayBtn');
 
+        // 🎧 監聽：當音檔播放完畢時，自動將所有試聽按鈕恢復成 ▶
+        previewAudio.addEventListener('ended', () => {
+            document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
+        });
+
         function openModal(category) {
-            // 🔒 如果正在播放中，阻止開啟選單
             if (isPlaying) return; 
 
             activeCategory = category;
@@ -176,14 +180,17 @@
         function closeModal() {
             modal.classList.remove('show');
             previewAudio.pause();
+            document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
         }
 
         function togglePreview(url, btn) {
             if (url === 'none') return;
-            if (previewAudio.src && previewAudio.src.includes(url) && !previewAudio.paused) {
-                previewAudio.pause(); btn.innerText = '▶';
+            if (previewAudio.src && previewAudio.src.includes(encodeURI(url)) && !previewAudio.paused) {
+                previewAudio.pause();
+                btn.innerText = '▶';
             } else {
-                previewAudio.src = url; previewAudio.play();
+                previewAudio.src = url;
+                previewAudio.play();
                 document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
                 btn.innerText = '⏸';
             }
@@ -209,19 +216,16 @@
             if (!currentSelection.drums || !currentSelection.lead || !currentSelection.pad) return;
 
             if (isPlaying) {
-                // 🛑 停止播放邏輯
                 Tone.Transport.stop();
                 globalPlayBtn.classList.remove('playing');
                 globalPlayBtn.innerText = dict[lang].btnPlay;
                 
-                // 🔓 解除素材槽鎖定
                 document.querySelectorAll('.slot').forEach(el => el.classList.remove('disabled'));
                 
                 isPlaying = false;
                 return;
             }
 
-            // ▶️ 開始播放邏輯
             globalPlayBtn.innerText = dict[lang].btnLoading;
             await Tone.start();
             Tone.Transport.stop(); 
@@ -248,7 +252,6 @@
             globalPlayBtn.classList.add('playing');
             globalPlayBtn.innerText = dict[lang].btnStop;
             
-            // 🔒 鎖定所有素材槽
             document.querySelectorAll('.slot').forEach(el => el.classList.add('disabled'));
             
             isPlaying = true;
