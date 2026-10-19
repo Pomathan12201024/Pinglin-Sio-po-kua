@@ -10,10 +10,19 @@
         .header { text-align: center; margin-bottom: 25px; }
         .header a { text-decoration: none; color: #0a84ff; font-weight: bold; font-size: 1.1rem; display: inline-block; margin-bottom: 10px; }
         .slot-container { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; }
-        .slot { background-color: #2c2c2e; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
+        .slot { background-color: #2c2c2e; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, opacity 0.2s; }
         .slot.active { border-color: #0a84ff; background-color: #1c1c1e; }
         .slot-info h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
         .slot-info p { margin: 0; color: #8e8e93; font-size: 0.9rem; }
+        
+        /* 🔒 播放時鎖定素材槽的樣式 */
+        .slot.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            border-color: transparent;
+        }
+
         .global-play-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(28, 28, 30, 0.95); padding: 20px; box-sizing: border-box; display: flex; justify-content: center; border-top: 1px solid #333; }
         .btn-global-play { background-color: #30d158; color: black; font-size: 1.3rem; font-weight: bold; padding: 15px 40px; border-radius: 30px; border: none; width: 100%; max-width: 400px; opacity: 0.4; pointer-events: none; transition: all 0.3s; }
         .btn-global-play.ready { opacity: 1; pointer-events: auto; cursor: pointer; box-shadow: 0 0 15px rgba(48, 209, 88, 0.4); }
@@ -99,8 +108,6 @@
             }
         };
 
-        // 🚨 修復版資料庫：補上 audio/ 路徑，建議檔名不要有空格
-        // 並將「無」的 url 設為特殊的字串 'none'
         const library = {
             drums: [
                 { id: 'd1', name: { 'zh': '鼓組', 'en': 'Drum' }, url: 'audio/sio_po_kua_drum.mp3' },
@@ -116,7 +123,6 @@
             ]
         };
 
-        // 初始化靜態介面語言
         document.getElementById('ui-back').innerText = dict[lang].back;
         document.getElementById('ui-title').innerText = dict[lang].title;
         document.getElementById('ui-desc').innerText = dict[lang].desc;
@@ -130,6 +136,7 @@
         let activeCategory = ''; 
         let previewAudio = new Audio(); 
         let tonePlayers = {}; 
+        let isPlaying = false; // 宣告狀態變數
 
         const modal = document.getElementById('selectionModal');
         const modalList = document.getElementById('modalList');
@@ -137,6 +144,9 @@
         const globalPlayBtn = document.getElementById('globalPlayBtn');
 
         function openModal(category) {
+            // 🔒 如果正在播放中，阻止開啟選單
+            if (isPlaying) return; 
+
             activeCategory = category;
             const catName = category === 'drums' ? dict[lang].slotDrums : (category === 'lead' ? dict[lang].slotlead : dict[lang].slotpad);
             modalTitle.innerText = dict[lang].modalSelect + ' ' + catName;
@@ -154,7 +164,6 @@
                         ${isSelected ? `<span style="font-size:0.8rem; color:#30d158;">${dict[lang].selectedMark}</span>` : ''}
                     </div>
                     <div class="option-controls">
-                        <!-- 如果是無(none)，就不顯示試聽按鈕 -->
                         ${item.url !== 'none' ? `<button class="preview-btn" onclick="togglePreview('${item.url}', this)">▶</button>` : ''}
                         <button class="select-btn" onclick="selectItem('${item.id}', '${itemName}', '${item.url}')">${dict[lang].selectBtn}</button>
                     </div>
@@ -196,19 +205,23 @@
             }
         }
 
-        let isPlaying = false;
-
         globalPlayBtn.addEventListener('click', async () => {
             if (!currentSelection.drums || !currentSelection.lead || !currentSelection.pad) return;
 
             if (isPlaying) {
+                // 🛑 停止播放邏輯
                 Tone.Transport.stop();
                 globalPlayBtn.classList.remove('playing');
                 globalPlayBtn.innerText = dict[lang].btnPlay;
+                
+                // 🔓 解除素材槽鎖定
+                document.querySelectorAll('.slot').forEach(el => el.classList.remove('disabled'));
+                
                 isPlaying = false;
                 return;
             }
 
+            // ▶️ 開始播放邏輯
             globalPlayBtn.innerText = dict[lang].btnLoading;
             await Tone.start();
             Tone.Transport.stop(); 
@@ -216,7 +229,6 @@
             Object.values(tonePlayers).forEach(player => player.dispose());
             tonePlayers = {};
 
-            // 修復版：只有當網址不是 'none' 時，才載入音軌
             if (currentSelection.drums.url !== 'none') {
                 tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
                 tonePlayers.drums.loop = true;
@@ -230,12 +242,15 @@
                 tonePlayers.pad.loop = true;
             }
 
-            // 等待所有「有被選擇」的音檔載入完成
             await Tone.loaded();
             Tone.Transport.start();
             
             globalPlayBtn.classList.add('playing');
             globalPlayBtn.innerText = dict[lang].btnStop;
+            
+            // 🔒 鎖定所有素材槽
+            document.querySelectorAll('.slot').forEach(el => el.classList.add('disabled'));
+            
             isPlaying = true;
         });
     </script>
