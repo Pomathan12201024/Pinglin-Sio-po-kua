@@ -81,7 +81,7 @@
     <script>
         const lang = localStorage.getItem('prefLang') || 'zh';
 
-        // 語言字典：包含 UI 與動態按鈕文字
+        // 語言字典
         const dict = {
             'zh': {
                 'back': '← 回到主頁', 'title': '你的拼貼工作站', 'desc': '點擊下方區塊選擇素材，全部選滿即可播放',
@@ -92,26 +92,27 @@
             },
             'en': {
                 'back': '← Back to Home', 'title': 'Your Collage Station', 'desc': 'Click slots below to select materials. Fill all to play.',
-                'slotDrums': 'Drums', 'slotlead': 'lead', 'slotpad': 'pad',
+                'slotDrums': 'Drums', 'slotlead': 'Lead', 'slotpad': 'River Pad',
                 'notSelected': 'Not selected...', 'btnNotReady': 'Fill all tracks', 'btnPlay': '▶ Play All',
                 'btnStop': '⏸ Stop', 'btnLoading': 'Loading sync...',
                 'modalSelect': 'Select ', 'selectedMark': '✅ Selected', 'selectBtn': 'Select'
             }
         };
 
-        // 雙語版素材資料庫
+        // 🚨 修復版資料庫：補上 audio/ 路徑，建議檔名不要有空格
+        // 並將「無」的 url 設為特殊的字串 'none'
         const library = {
             drums: [
-                { id: 'd1', name: { 'zh': '鼓組', 'en': 'drum' }, url: 'sio po kua drum.mp3' },
+                { id: 'd1', name: { 'zh': '鼓組', 'en': 'Drum' }, url: 'audio/sio_po_kua_drum.mp3' },
                 { id: 'd2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
             ],
             lead: [
-                { id: 'b1', name: { 'zh': '主旋律', 'en': 'lead' }, url: 'sio po kua lead.mp3' },
-                { id: 'b2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
+                { id: 'l1', name: { 'zh': '主旋律', 'en': 'Lead' }, url: 'audio/sio_po_kua_lead.mp3' },
+                { id: 'l2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
             ],
             pad: [
-                { id: 'c1', name: { 'zh': '河流', 'en': 'river' }, url: 'sio po kua river.mp3' },
-                { id: 'c2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
+                { id: 'p1', name: { 'zh': '河流', 'en': 'River' }, url: 'audio/sio_po_kua_river.mp3' },
+                { id: 'p2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
             ]
         };
 
@@ -143,7 +144,7 @@
             modalList.innerHTML = '';
             library[category].forEach(item => {
                 const isSelected = currentSelection[category] && currentSelection[category].id === item.id;
-                const itemName = item.name[lang]; // 抓取對應語言的名字
+                const itemName = item.name[lang]; 
                 
                 const div = document.createElement('div');
                 div.className = 'option-item';
@@ -153,7 +154,8 @@
                         ${isSelected ? `<span style="font-size:0.8rem; color:#30d158;">${dict[lang].selectedMark}</span>` : ''}
                     </div>
                     <div class="option-controls">
-                        <button class="preview-btn" onclick="togglePreview('${item.url}', this)">▶</button>
+                        <!-- 如果是無(none)，就不顯示試聽按鈕 -->
+                        ${item.url !== 'none' ? `<button class="preview-btn" onclick="togglePreview('${item.url}', this)">▶</button>` : ''}
                         <button class="select-btn" onclick="selectItem('${item.id}', '${itemName}', '${item.url}')">${dict[lang].selectBtn}</button>
                     </div>
                 `;
@@ -168,6 +170,7 @@
         }
 
         function togglePreview(url, btn) {
+            if (url === 'none') return;
             if (previewAudio.src && previewAudio.src.includes(url) && !previewAudio.paused) {
                 previewAudio.pause(); btn.innerText = '▶';
             } else {
@@ -213,14 +216,21 @@
             Object.values(tonePlayers).forEach(player => player.dispose());
             tonePlayers = {};
 
-            tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
-            tonePlayers.lead = new Tone.Player(currentSelection.lead.url).toDestination().sync().start(0);
-            tonePlayers.pad = new Tone.Player(currentSelection.pad.url).toDestination().sync().start(0);
+            // 修復版：只有當網址不是 'none' 時，才載入音軌
+            if (currentSelection.drums.url !== 'none') {
+                tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
+                tonePlayers.drums.loop = true;
+            }
+            if (currentSelection.lead.url !== 'none') {
+                tonePlayers.lead = new Tone.Player(currentSelection.lead.url).toDestination().sync().start(0);
+                tonePlayers.lead.loop = true;
+            }
+            if (currentSelection.pad.url !== 'none') {
+                tonePlayers.pad = new Tone.Player(currentSelection.pad.url).toDestination().sync().start(0);
+                tonePlayers.pad.loop = true;
+            }
 
-            tonePlayers.drums.loop = true;
-            tonePlayers.lead.loop = true;
-            tonePlayers.pad.loop = true;
-
+            // 等待所有「有被選擇」的音檔載入完成
             await Tone.loaded();
             Tone.Transport.start();
             
