@@ -159,28 +159,16 @@
             background-color: var(--primary-dark);
         }
 
-        /* 播放中：暫停按鈕 */
-        .btn-play.is-playing {
-            background: transparent;
-            color: #333333;
-            box-shadow: none;
-            border-radius: 0;
-            transform: none;
-        }
-
-        .btn-play.is-playing:active {
-            background: transparent;
-            color: var(--primary);
-        }
-
-        .play-icon {
+        /* 修復圖示切換權重問題 */
+        .btn-play .play-icon {
             display: block;
         }
 
-        .pause-icon {
+        .btn-play .pause-icon {
             display: none;
         }
 
+        /* 播放中：暫停按鈕樣式 */
         .btn-play.is-playing .play-icon {
             display: none;
         }
