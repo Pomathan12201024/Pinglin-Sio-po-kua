@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -409,14 +408,13 @@
             onclick="openModal('drums')">
 
             <div class="slot-info">
-                <h3 id="ui-slot-drums">相褒歌鼓組</h3>
+                <h3 id="ui-slot-drums">鼓組</h3>
                 <p id="label-drums" class="label-status">
                     尚未選擇...
                 </p>
             </div>
 
             <div class="slot-icon" id="icon-drums">
-                <!-- 加號圖示 -->
                 <svg viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.8"
                     stroke-linecap="round">
@@ -431,7 +429,7 @@
             onclick="openModal('lead')">
 
             <div class="slot-info">
-                <h3 id="ui-slot-lead">相褒歌主旋律</h3>
+                <h3 id="ui-slot-lead">主旋律</h3>
                 <p id="label-lead" class="label-status">
                     尚未選擇...
                 </p>
@@ -448,17 +446,17 @@
         </button>
 
 
-        <button class="slot" id="slot-pad"
-            onclick="openModal('pad')">
+        <button class="slot" id="slot-ambient"
+            onclick="openModal('ambient')">
 
             <div class="slot-info">
-                <h3 id="ui-slot-pad">坪林河流</h3>
-                <p id="label-pad" class="label-status">
+                <h3 id="ui-slot-ambient">環境音</h3>
+                <p id="label-ambient" class="label-status">
                     尚未選擇...
                 </p>
             </div>
 
-            <div class="slot-icon" id="icon-pad">
+            <div class="slot-icon" id="icon-ambient">
                 <svg viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.8"
                     stroke-linecap="round">
@@ -474,11 +472,9 @@
     <!-- 底部共同播放按鈕 -->
 
     <div class="global-play-container">
-
         <button id="globalPlayBtn" class="btn-global-play">
             需填滿所有軌道
         </button>
-
     </div>
 
 
@@ -528,9 +524,9 @@
                 title: '你的拼貼工作站',
                 desc: '點擊下方區塊選擇素材，全部選滿即可播放',
 
-                slotDrums: '相褒歌鼓組',
-                slotLead: '相褒歌主旋律',
-                slotPad: '坪林河流',
+                slotDrums: '鼓組',
+                slotLead: '主旋律',
+                slotAmbient: '環境音',
 
                 notSelected: '尚未選擇...',
                 btnNotReady: '需填滿所有軌道',
@@ -551,7 +547,7 @@
 
                 slotDrums: 'Drums',
                 slotLead: 'Lead Melody',
-                slotPad: 'Pinglin River',
+                slotAmbient: 'Ambient Sounds',
 
                 notSelected: 'Not selected...',
                 btnNotReady: 'Fill all tracks',
@@ -574,40 +570,63 @@
 
         const library = {
 
+            // 第一組：鼓組
             drums: [
                 {
                     id: 'd1',
-                    name: { zh: '鼓組', en: 'Drums' },
-                    url: 'audio/sio_po_kua_drum.mp3'
+                    name: { zh: '鼓組1', en: 'Drums 1' },
+                    url: 'audio/drum_1.mp3'
                 },
                 {
                     id: 'd2',
+                    name: { zh: '鼓組2', en: 'Drums 2' },
+                    url: 'audio/drum_2.mp3'
+                },
+                {
+                    id: 'd3',
+                    name: { zh: '鼓組3', en: 'Drums 3' },
+                    url: 'audio/drum_3.mp3'
+                },
+                {
+                    id: 'd-none',
                     name: { zh: '無', en: 'None' },
                     url: 'none'
                 }
             ],
 
+            // 第二組：主旋律
             lead: [
                 {
                     id: 'l1',
-                    name: { zh: '主旋律', en: 'Lead Melody' },
-                    url: 'audio/sio_po_kua_lead.mp3'
+                    name: { zh: '主旋律1', en: 'Lead Melody 1' },
+                    url: 'audio/lead_1.mp3'
                 },
                 {
-                    id: 'l2',
+                    id: 'l-none',
                     name: { zh: '無', en: 'None' },
                     url: 'none'
                 }
             ],
 
-            pad: [
+            // 第三組：環境音
+            ambient: [
                 {
-                    id: 'p1',
+                    id: 'a1',
                     name: { zh: '河流', en: 'River' },
-                    url: 'audio/sio_po_kua_river.mp3'
+                    url: 'audio/river.mp3'
                 },
                 {
-                    id: 'p2',
+                    id: 'a2',
+                    name: { zh: '蟲鳴鳥叫', en: 'Insects and Birds' },
+                    url: 'audio/insectbird.mp3'
+                },
+                {
+                    id: 'a3',
+                    name: { zh: '竹簍特別版', en: 'Bamboo Basket Special' },
+                    url: 'audio/basket.mp3'
+                },
+                {
+                    id: 'a-none',
                     name: { zh: '無', en: 'None' },
                     url: 'none'
                 }
@@ -621,16 +640,12 @@
         // ==========================
 
         document.getElementById('ui-back').innerText = dict[lang].back;
-
         document.getElementById('ui-title').innerText = dict[lang].title;
-
         document.getElementById('ui-desc').innerText = dict[lang].desc;
 
         document.getElementById('ui-slot-drums').innerText = dict[lang].slotDrums;
-
         document.getElementById('ui-slot-lead').innerText = dict[lang].slotLead;
-
-        document.getElementById('ui-slot-pad').innerText = dict[lang].slotPad;
+        document.getElementById('ui-slot-ambient').innerText = dict[lang].slotAmbient;
 
         document.querySelectorAll('.label-status').forEach(el => {
             el.innerText = dict[lang].notSelected;
@@ -644,7 +659,7 @@
         let currentSelection = {
             drums: null,
             lead: null,
-            pad: null
+            ambient: null
         };
 
         let activeCategory = '';
@@ -659,11 +674,8 @@
 
 
         const modal = document.getElementById('selectionModal');
-
         const modalList = document.getElementById('modalList');
-
         const modalTitle = document.getElementById('modalTitle');
-
         const globalPlayBtn = document.getElementById('globalPlayBtn');
 
 
@@ -732,13 +744,13 @@
 
             activeCategory = category;
 
-            const catName = dict[lang][
-                category === 'drums'
-                    ? 'slotDrums'
-                    : category === 'lead'
-                        ? 'slotLead'
-                        : 'slotPad'
-            ];
+            const categoryNameKey = {
+                drums: 'slotDrums',
+                lead: 'slotLead',
+                ambient: 'slotAmbient'
+            };
+
+            const catName = dict[lang][categoryNameKey[category]];
 
             modalTitle.innerText =
                 dict[lang].modalSelect + ' ' + catName;
@@ -817,7 +829,6 @@
             modal.classList.remove('show');
 
             previewAudio.pause();
-
             previewAudio.currentTime = 0;
 
             document.querySelectorAll('.preview-btn').forEach(btn => {
@@ -853,7 +864,6 @@
             ) {
 
                 previewAudio.pause();
-
                 btn.innerHTML = getIcon('play');
 
             } else {
@@ -910,7 +920,7 @@
                 `slot-${activeCategory}`
             ).classList.add('active');
 
-            // 將加號改為勾選圖示
+            // 更新勾選圖示
 
             document.getElementById(
                 `icon-${activeCategory}`
@@ -932,18 +942,16 @@
             const isReady =
                 currentSelection.drums !== null &&
                 currentSelection.lead !== null &&
-                currentSelection.pad !== null;
+                currentSelection.ambient !== null;
 
             if (isReady && !isPlaying) {
 
                 globalPlayBtn.classList.add('ready');
-
                 globalPlayBtn.innerText = dict[lang].btnPlay;
 
             } else if (!isReady) {
 
                 globalPlayBtn.classList.remove('ready');
-
                 globalPlayBtn.classList.remove('playing');
 
                 globalPlayBtn.innerText = dict[lang].btnNotReady;
@@ -970,6 +978,30 @@
 
 
         // ==========================
+        // 建立並同步播放單一軌道
+        // ==========================
+
+        function createTrackPlayer(category) {
+
+            const selection = currentSelection[category];
+
+            if (!selection || selection.url === 'none') {
+                return;
+            }
+
+            const player = new Tone.Player({
+                url: selection.url,
+                loop: true
+            }).toDestination();
+
+            player.sync().start(0);
+
+            tonePlayers[category] = player;
+
+        }
+
+
+        // ==========================
         // 共同播放功能
         // ==========================
 
@@ -980,7 +1012,7 @@
             const isReady =
                 currentSelection.drums !== null &&
                 currentSelection.lead !== null &&
-                currentSelection.pad !== null;
+                currentSelection.ambient !== null;
 
             if (!isReady) return;
 
@@ -990,7 +1022,6 @@
             if (isPlaying) {
 
                 Tone.Transport.stop();
-
                 Tone.Transport.cancel();
 
                 disposePlayers();
@@ -1023,90 +1054,41 @@
                 await Tone.start();
 
                 Tone.Transport.stop();
-
                 Tone.Transport.cancel();
 
                 disposePlayers();
 
-
-                // 建立鼓組播放器
-
-                if (currentSelection.drums.url !== 'none') {
-
-                    tonePlayers.drums = new Tone.Player(
-                        currentSelection.drums.url
-                    ).toDestination();
-
-                    tonePlayers.drums.loop = true;
-
-                    tonePlayers.drums.sync().start(0);
-
-                }
-
-
-                // 建立主旋律播放器
-
-                if (currentSelection.lead.url !== 'none') {
-
-                    tonePlayers.lead = new Tone.Player(
-                        currentSelection.lead.url
-                    ).toDestination();
-
-                    tonePlayers.lead.loop = true;
-
-                    tonePlayers.lead.sync().start(0);
-
-                }
-
-
-                // 建立環境音播放器
-
-                if (currentSelection.pad.url !== 'none') {
-
-                    tonePlayers.pad = new Tone.Player(
-                        currentSelection.pad.url
-                    ).toDestination();
-
-                    tonePlayers.pad.loop = true;
-
-                    tonePlayers.pad.sync().start(0);
-
-                }
-
+                // 建立三組同步播放器
+                createTrackPlayer('drums');
+                createTrackPlayer('lead');
+                createTrackPlayer('ambient');
 
                 // 等待素材載入完成
-
                 await Tone.loaded();
 
                 Tone.Transport.start();
 
-
                 // 更新播放狀態
-
                 isPlaying = true;
 
                 globalPlayBtn.classList.add('playing');
-
                 globalPlayBtn.innerText = dict[lang].btnStop;
 
-
                 // 鎖定素材選擇
-
                 document.querySelectorAll('.slot').forEach(el => {
                     el.classList.add('disabled');
                 });
-
 
             } catch (error) {
 
                 console.error('Playback error:', error);
 
                 Tone.Transport.stop();
-
                 Tone.Transport.cancel();
 
                 disposePlayers();
 
+                globalPlayBtn.classList.remove('playing');
                 globalPlayBtn.innerText = dict[lang].btnPlay;
 
             } finally {
