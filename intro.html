@@ -1,79 +1,762 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>介紹原始素材</title>
+    <meta name="theme-color" content="#F5F4EC">
+    <title>介紹原始素材｜一心二葉・坪心而唱</title>
+
     <style>
-        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f7; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; position: relative; }
-        .header a { text-decoration: none; color: #007aff; font-weight: bold; display: inline-block; margin-bottom: 10px; }
-        .item-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 500px; margin-left: auto; margin-right: auto; }
-        .item-img { width: 100%; height: 180px; background-color: #e5e5ea; border-radius: 10px; object-fit: cover; margin-bottom: 15px; }
-        .item-title { font-size: 1.3rem; margin: 0 0 10px 0; color: #1c1c1e; }
-        .item-desc { color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
-        .listen-btn { display: block; text-align: center; background-color: #af52de; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+        :root {
+            --forest: #385C45;
+            --forest-dark: #263F32;
+            --tea: #789477;
+            --tea-light: #A9BBA0;
+            --cream: #F5F4EC;
+            --paper: #E9E8D8;
+            --earth: #B9A47C;
+            --text: #35463A;
+            --muted: #718073;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family:
+                "Noto Sans TC",
+                "Helvetica Neue",
+                Arial,
+                sans-serif;
+            background: var(--cream);
+            color: var(--text);
+        }
+
+        /* 頁面主容器 */
+
+        .page-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 35px 25px 65px;
+        }
+
+        /* 頁首 */
+
+        .header {
+            margin-bottom: 38px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--forest);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--tea);
+        }
+
+        .back-link svg {
+            width: 19px;
+            height: 19px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-top: 42px;
+        }
+
+        .section-label {
+            color: var(--tea);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .header-title h1 {
+            color: var(--forest);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .header-description {
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.8;
+            margin-top: 13px;
+        }
+
+        .title-line {
+            width: 45px;
+            height: 3px;
+            background: var(--earth);
+            border-radius: 5px;
+            margin: 23px auto 0;
+        }
+
+        /* 素材列表 */
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 素材卡片 */
+
+        .item-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow:
+                0 5px 20px rgba(56, 92, 69, 0.07);
+
+            transition:
+                transform 0.25s,
+                box-shadow 0.25s;
+
+            animation: fadeIn 0.7s ease both;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 9px 25px rgba(56, 92, 69, 0.12);
+        }
+
+        /* 卡片圖片 */
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 13px;
+            background: var(--paper);
+            margin-bottom: 21px;
+        }
+
+        .item-img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s;
+        }
+
+        .item-card:hover .item-img {
+            transform: scale(1.035);
+        }
+
+        /* 圖片載入失敗時的替代畫面 */
+
+        .image-fallback {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--tea);
+            background: var(--paper);
+        }
+
+        .image-fallback svg {
+            width: 35px;
+            height: 35px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .image-fallback span {
+            font-size: 0.8rem;
+        }
+
+        /* 卡片文字 */
+
+        .item-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--forest);
+            margin: 0;
+        }
+
+        .item-number {
+            flex-shrink: 0;
+            color: var(--tea);
+            background: #EDF1E9;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .item-desc {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin: 0 0 20px;
+        }
+
+        /* 聆聽按鈕 */
+
+        .listen-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            width: 100%;
+            padding: 15px;
+
+            background: var(--tea);
+            color: #FFFFFF;
+
+            border-radius: 11px;
+            text-decoration: none;
+
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+
+            transition:
+                background 0.2s,
+                transform 0.2s;
+        }
+
+        .listen-btn:hover {
+            background: var(--forest);
+            transform: translateY(-2px);
+        }
+
+        .listen-btn:active {
+            transform: scale(0.98);
+        }
+
+        .listen-btn svg {
+            width: 21px;
+            height: 21px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* 頁尾 */
+
+        .footer {
+            margin-top: 55px;
+            padding: 25px 15px;
+            text-align: center;
+            border-top: 1px solid #DFE2D8;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+
+        /* 動畫 */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .item-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .item-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        /* 鍵盤操作 */
+
+        a:focus-visible {
+            outline: 3px solid var(--earth);
+            outline-offset: 4px;
+        }
+
+        /* 手機版 */
+
+        @media (max-width: 600px) {
+
+            .page-container {
+                padding: 25px 18px 45px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header-title {
+                margin-top: 35px;
+            }
+
+            .header-title h1 {
+                font-size: 1.75rem;
+            }
+
+            .header-description {
+                font-size: 0.9rem;
+                padding: 0 8px;
+            }
+
+            .item-list {
+                gap: 23px;
+            }
+
+            .item-card {
+                padding: 17px;
+                border-radius: 18px;
+            }
+
+            .image-wrapper {
+                border-radius: 11px;
+                margin-bottom: 18px;
+            }
+
+            .item-title {
+                font-size: 1.2rem;
+            }
+
+            .item-desc {
+                font-size: 0.9rem;
+            }
+
+            .listen-btn {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+
+            .footer {
+                margin-top: 40px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
     </style>
 </head>
+
 <body>
 
-    <div class="header">
-        <a href="index.html" data-i18n="back">← 回到主頁</a>
-        <h2 data-i18n="title">認識聲音素材</h2>
-    </div>
+    <main class="page-container">
 
-    <div class="item-card">
-        <img src="" alt="Drums" class="item-img">
-        <h3 class="item-title" data-i18n="item1Title">相褒歌鼓組</h3>
-        <p class="item-desc" data-i18n="item1Desc">全部都是由採集音製作而成</p>
-        <a href="listen.html?sound=drums" class="listen-btn" data-i18n="btnListen">🎧 前往聆聽</a>
-    </div>
+        <!-- 頁首 -->
+        <header class="header">
 
-    <div class="item-card">
-        <img src="" alt="lead" class="item-img">
-        <h3 class="item-title" data-i18n="item2Title">相褒歌主旋律</h3>
-        <p class="item-desc" data-i18n="item2Desc">簡易旋律</p>
-        <a href="listen.html?sound=lead" class="listen-btn" data-i18n="btnListen">🎧 前往聆聽</a>
-    </div>
+            <a href="index.html" class="back-link" data-i18n="back">
 
-    <div class="item-card">
-        <img src="" alt="lead" class="item-img">
-        <h3 class="item-title" data-i18n="item3Title">坪林河流</h3>
-        <p class="item-desc" data-i18n="item3Desc">河流</p>
-        <a href="listen.html?sound=pad" class="listen-btn" data-i18n="btnListen">🎧 前往聆聽</a>
-    </div>
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+
+                回到主頁
+
+            </a>
+
+
+            <div class="header-title">
+
+                <div class="section-label">
+                    EXPLORE THE SOUNDS
+                </div>
+
+                <h1 data-i18n="title">
+                    認識聲音素材
+                </h1>
+
+                <p class="header-description"
+                   data-i18n="subtitle">
+                    聆聽坪林的聲音，探索相褒歌的音樂元素。
+                </p>
+
+                <div class="title-line"></div>
+
+            </div>
+
+        </header>
+
+
+        <!-- 素材卡片列表 -->
+        <section class="item-list">
+
+
+            <!-- 素材 01：相褒歌鼓組 -->
+
+            <article class="item-card">
+
+                <div class="image-wrapper">
+
+                    <img
+                        src="images/photo_2_1.jpg"
+                        alt="相褒歌鼓組聲音素材"
+                        class="item-img"
+                        loading="lazy"
+                        onerror="showFallback(this)"
+                    >
+
+                    <div class="image-fallback">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="7" width="18" height="14" rx="2"/>
+                            <circle cx="8" cy="12" r="1.5"/>
+                            <circle cx="16" cy="12" r="1.5"/>
+                            <path d="M7 4h10M12 2v2"/>
+                        </svg>
+                        <span>Image unavailable</span>
+                    </div>
+
+                </div>
+
+
+                <div class="item-heading">
+
+                    <h2 class="item-title"
+                        data-i18n="item1Title">
+                        相褒歌鼓組
+                    </h2>
+
+                    <span class="item-number">
+                        01 / RHYTHM
+                    </span>
+
+                </div>
+
+
+                <p class="item-desc"
+                   data-i18n="item1Desc">
+                    全部都是由採集音製作而成。
+                </p>
+
+
+                <a href="listen.html?sound=drums"
+                   class="listen-btn">
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                    </svg>
+
+                    <span data-i18n="btnListen">
+                        前往聆聽
+                    </span>
+
+                </a>
+
+            </article>
+
+
+            <!-- 素材 02：相褒歌主旋律 -->
+
+            <article class="item-card">
+
+                <div class="image-wrapper">
+
+                    <img
+                        src="images/photo_2_2.jpg"
+                        alt="相褒歌主旋律聲音素材"
+                        class="item-img"
+                        loading="lazy"
+                        onerror="showFallback(this)"
+                    >
+
+                    <div class="image-fallback">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                        </svg>
+                        <span>Image unavailable</span>
+                    </div>
+
+                </div>
+
+
+                <div class="item-heading">
+
+                    <h2 class="item-title"
+                        data-i18n="item2Title">
+                        相褒歌主旋律
+                    </h2>
+
+                    <span class="item-number">
+                        02 / MELODY
+                    </span>
+
+                </div>
+
+
+                <p class="item-desc"
+                   data-i18n="item2Desc">
+                    簡易旋律素材。
+                </p>
+
+
+                <a href="listen.html?sound=lead"
+                   class="listen-btn">
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                    </svg>
+
+                    <span data-i18n="btnListen">
+                        前往聆聽
+                    </span>
+
+                </a>
+
+            </article>
+
+
+            <!-- 素材 03：坪林河流 -->
+
+            <article class="item-card">
+
+                <div class="image-wrapper">
+
+                    <img
+                        src="images/photo_2_3.jpg"
+                        alt="坪林河流自然環境"
+                        class="item-img"
+                        loading="lazy"
+                        onerror="showFallback(this)"
+                    >
+
+                    <div class="image-fallback">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2 8c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                            <path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                            <path d="M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                        </svg>
+                        <span>Image unavailable</span>
+                    </div>
+
+                </div>
+
+
+                <div class="item-heading">
+
+                    <h2 class="item-title"
+                        data-i18n="item3Title">
+                        坪林河流
+                    </h2>
+
+                    <span class="item-number">
+                        03 / NATURE
+                    </span>
+
+                </div>
+
+
+                <p class="item-desc"
+                   data-i18n="item3Desc">
+                    收錄坪林河流的自然環境聲音。
+                </p>
+
+
+                <a href="listen.html?sound=pad"
+                   class="listen-btn">
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                    </svg>
+
+                    <span data-i18n="btnListen">
+                        前往聆聽
+                    </span>
+
+                </a>
+
+            </article>
+
+        </section>
+
+
+        <!-- 頁尾 -->
+
+        <footer class="footer">
+
+            <p data-i18n="footer">
+                一心二葉・坪心而唱｜探索坪林的聲音
+            </p>
+
+        </footer>
+
+    </main>
+
+
+    <!-- 圖片錯誤處理 -->
 
     <script>
-        const dict = {
-            'zh': {
-                'back': '← 回到主頁',
-                'title': '認識聲音素材',
-                'item1Title': '相褒歌鼓組',
-                'item1Desc': '全部都是由採集音製作而成',
-                'item2Title': '相褒歌主旋律',
-                'item2Desc': '簡易旋律',
-                'item3Title': '坪林河流',
-                'item3Desc': '河流',
-                'btnListen': '🎧 前往聆聽'
-            },
-            'en': {
-                'back': '← Back to Home',
-                'title': 'Meet the Sounds',
-                'item1Title': 'sio po kua Drums',
-                'item1Desc': 'ok',
-                'item2Title': 'sio po kua lead',
-                'item2Desc': 'ok',
-                'item3Title': 'Pinglin river',
-                'item3Desc': 'ok',
-                'btnListen': '🎧 Listen'
+
+        function showFallback(img) {
+
+            img.style.display = 'none';
+
+            const fallback =
+                img.parentElement.querySelector('.image-fallback');
+
+            if (fallback) {
+                fallback.style.display = 'flex';
             }
+
+        }
+
+
+        // 中英文翻譯
+
+        const dict = {
+
+            zh: {
+
+                back: '回到主頁',
+
+                title: '認識聲音素材',
+
+                subtitle: '聆聽坪林的聲音，探索相褒歌的音樂元素。',
+
+                item1Title: '相褒歌鼓組',
+
+                item1Desc: '全部都是由採集音製作而成。',
+
+                item2Title: '相褒歌主旋律',
+
+                item2Desc: '簡易旋律素材。',
+
+                item3Title: '坪林河流',
+
+                item3Desc: '收錄坪林河流的自然環境聲音。',
+
+                btnListen: '前往聆聽',
+
+                footer: '一心二葉・坪心而唱｜探索坪林的聲音'
+
+            },
+
+            en: {
+
+                back: 'Back to Home',
+
+                title: 'Explore the Sounds',
+
+                subtitle: 'Listen to the sounds of Pinglin and discover the musical elements of Sio-Po-Kua.',
+
+                item1Title: 'Sio-Po-Kua Percussion',
+
+                item1Desc: 'Rhythmic elements created entirely from field recordings.',
+
+                item2Title: 'Sio-Po-Kua Melody',
+
+                item2Desc: 'A collection of simple melodic materials.',
+
+                item3Title: 'Pinglin River',
+
+                item3Desc: 'Natural environmental recordings of the Pinglin river.',
+
+                btnListen: 'Listen',
+
+                footer: 'One Heart, Two Leaves · Discover the Sounds of Pinglin'
+
+            }
+
         };
 
-        const savedLang = localStorage.getItem('prefLang') || 'zh';
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if(dict[savedLang][key]) el.innerText = dict[savedLang][key];
-        });
+
+        function setLang(lang) {
+
+            document.documentElement.lang =
+                lang === 'zh' ? 'zh-TW' : 'en';
+
+            document.querySelectorAll('[data-i18n]')
+                .forEach(el => {
+
+                    const key = el.getAttribute('data-i18n');
+
+                    if (dict[lang] && dict[lang][key]) {
+                        el.textContent = dict[lang][key];
+                    }
+
+                });
+
+            try {
+                localStorage.setItem('prefLang', lang);
+            } catch (e) {
+                // 無法儲存時仍正常顯示目前語言
+            }
+
+        }
+
+
+        // 讀取首頁儲存的語言設定
+
+        let savedLang = 'zh';
+
+        try {
+            savedLang = localStorage.getItem('prefLang') || 'zh';
+        } catch (e) {
+            savedLang = 'zh';
+        }
+
+        if (!dict[savedLang]) {
+            savedLang = 'zh';
+        }
+
+        setLang(savedLang);
+
     </script>
+
 </body>
 </html>
