@@ -38,7 +38,7 @@
             width: 100%;
             max-width: 440px;
             margin-bottom: 25px;
-            text-align: center; /* 改為置中 */
+            text-align: center;
         }
 
         .header a {
@@ -160,7 +160,6 @@
             background-color: var(--primary-dark);
         }
 
-        /* 修復圖示切換權重問題 */
         .btn-play .play-icon {
             display: block;
         }
@@ -169,7 +168,6 @@
             display: none;
         }
 
-        /* 播放中：暫停按鈕樣式 */
         .btn-play.is-playing .play-icon {
             display: none;
         }
@@ -242,7 +240,6 @@
                 height: 68px;
             }
         }
-
     </style>
 </head>
 
@@ -255,14 +252,13 @@
         </a>
     </div>
 
-
     <!-- 播放器 -->
     <div class="player-card">
 
         <img
             id="coverImg"
             src="images/photo_2_1.jpg"
-            alt="聲音素材封面"
+            alt="走路聲"
             class="cover-art"
         >
 
@@ -273,7 +269,6 @@
         <p class="track-artist" id="subtitle">
             聲音素材試聽
         </p>
-
 
         <!-- 播放進度 -->
         <div class="progress-container">
@@ -295,7 +290,6 @@
 
         </div>
 
-
         <!-- 播放控制 -->
         <div class="controls">
 
@@ -308,7 +302,6 @@
                 aria-pressed="true"
                 title="單曲循環"
             >
-
                 <svg viewBox="0 0 24 24"
                      fill="none"
                      stroke="currentColor"
@@ -316,15 +309,12 @@
                      stroke-linecap="round"
                      stroke-linejoin="round">
 
-                    <!-- 上方箭頭 -->
                     <path d="M17 2l3 3-3 3"/>
                     <path d="M20 5H9a6 6 0 0 0-5.2 3"/>
 
-                    <!-- 下方箭頭 -->
                     <path d="M7 22l-3-3 3-3"/>
                     <path d="M4 19h11a6 6 0 0 0 5.2-3"/>
 
-                    <!-- 數字 1 -->
                     <text
                         x="12"
                         y="15.2"
@@ -334,11 +324,8 @@
                         stroke="none"
                         text-anchor="middle"
                     >1</text>
-
                 </svg>
-
             </button>
-
 
             <!-- 上一首 -->
             <button
@@ -348,17 +335,11 @@
                 aria-label="上一首"
                 title="上一首"
             >
-
-                <svg viewBox="0 0 24 24"
-                     fill="currentColor">
-
+                <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M5 4h2v16H5z"/>
                     <path d="M19 4L8 12l11 8z"/>
-
                 </svg>
-
             </button>
-
 
             <!-- 播放 / 暫停 -->
             <button
@@ -368,8 +349,6 @@
                 aria-label="播放"
                 title="播放"
             >
-
-                <!-- 播放圖示 -->
                 <svg
                     class="play-icon"
                     viewBox="0 0 24 24"
@@ -378,7 +357,6 @@
                     <path d="M6 3.5L20 12 6 20.5z"/>
                 </svg>
 
-                <!-- 暫停圖示 -->
                 <svg
                     class="pause-icon"
                     viewBox="0 0 24 24"
@@ -387,9 +365,7 @@
                     <rect x="6" y="4" width="4" height="16" rx="0.8"/>
                     <rect x="14" y="4" width="4" height="16" rx="0.8"/>
                 </svg>
-
             </button>
-
 
             <!-- 下一首 -->
             <button
@@ -399,24 +375,16 @@
                 aria-label="下一首"
                 title="下一首"
             >
-
-                <svg viewBox="0 0 24 24"
-                     fill="currentColor">
-
+                <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17 4h2v16h-2z"/>
                     <path d="M5 4l11 8-11 8z"/>
-
                 </svg>
-
             </button>
 
         </div>
-
     </div>
 
-
     <audio id="audioPlayer" loop></audio>
-
 
     <script>
 
@@ -427,23 +395,30 @@
         const lang = localStorage.getItem('prefLang') || 'zh';
 
         const uiDict = {
-
             zh: {
                 back: '← 回前頁',
                 subtitle: '聲音素材試聽',
                 loading: '載入中...',
-                error: '音訊載入失敗'
+                error: '音訊載入失敗',
+                play: '播放',
+                pause: '暫停',
+                loop: '單曲循環',
+                prev: '上一首',
+                next: '下一首'
             },
 
             en: {
                 back: '← Back',
                 subtitle: 'Sound Material Preview',
                 loading: 'Loading...',
-                error: 'Audio loading failed'
+                error: 'Audio loading failed',
+                play: 'Play',
+                pause: 'Pause',
+                loop: 'Repeat One',
+                prev: 'Previous track',
+                next: 'Next track'
             }
-
         };
-
 
         document.getElementById('btnBack').innerText =
             uiDict[lang].back;
@@ -454,53 +429,85 @@
         document.getElementById('title').innerText =
             uiDict[lang].loading;
 
+        document.getElementById('loopBtn').title =
+            uiDict[lang].loop;
+
+        document.getElementById('prevBtn').title =
+            uiDict[lang].prev;
+
+        document.getElementById('nextBtn').title =
+            uiDict[lang].next;
+
 
         // =========================
-        // 素材資料庫
+        // 五項田野錄音資料庫
         // =========================
 
         const soundData = {
 
-            drums: {
+            single_1: {
                 title: {
-                    zh: '相褒歌鼓組',
-                    en: 'Sio-Po-Kua Drums'
+                    zh: '走路聲',
+                    en: 'Footsteps'
                 },
 
                 image: 'images/photo_2_1.jpg',
+                audio: 'audio/single_1.mp3',
 
-                audio: 'audio/sio_po_kua_drum.mp3',
-
-                prev: 'pad',
-                next: 'lead'
+                prev: 'single_5',
+                next: 'single_2'
             },
 
-            lead: {
+            single_2: {
                 title: {
-                    zh: '相褒歌主旋律',
-                    en: 'Sio-Po-Kua Lead'
+                    zh: '蟲鳴鳥叫聲',
+                    en: 'Insects and Birds'
                 },
 
                 image: 'images/photo_2_2.jpg',
+                audio: 'audio/single_2.mp3',
 
-                audio: 'audio/sio_po_kua_lead.mp3',
-
-                prev: 'drums',
-                next: 'pad'
+                prev: 'single_1',
+                next: 'single_3'
             },
 
-            pad: {
+            single_3: {
                 title: {
-                    zh: '坪林河流',
-                    en: 'Pinglin River'
+                    zh: '河流聲',
+                    en: 'River'
                 },
 
                 image: 'images/photo_2_3.jpg',
+                audio: 'audio/single_3.mp3',
 
-                audio: 'audio/sio_po_kua_river.mp3',
+                prev: 'single_2',
+                next: 'single_4'
+            },
 
-                prev: 'lead',
-                next: 'drums'
+            single_4: {
+                title: {
+                    zh: '採茶聲',
+                    en: 'Tea Picking'
+                },
+
+                image: 'images/photo_2_4.jpg',
+                audio: 'audio/single_4.mp3',
+
+                prev: 'single_3',
+                next: 'single_5'
+            },
+
+            single_5: {
+                title: {
+                    zh: '竹簍掃動茶葉聲',
+                    en: 'Bamboo Basket Brushing Tea Leaves'
+                },
+
+                image: 'images/photo_2_5.jpg',
+                audio: 'audio/single_5.mp3',
+
+                prev: 'single_4',
+                next: 'single_1'
             }
 
         };
@@ -514,7 +521,7 @@
             window.location.search
         );
 
-        let currentSound = urlParams.get('sound') || 'drums';
+        let currentSound = urlParams.get('sound') || 'single_1';
 
         const audio = document.getElementById('audioPlayer');
 
@@ -540,18 +547,31 @@
 
                 playBtn.classList.remove('is-playing');
 
-                playBtn.setAttribute('aria-label', '播放');
-                playBtn.setAttribute('title', '播放');
+                playBtn.setAttribute(
+                    'aria-label',
+                    uiDict[lang].play
+                );
+
+                playBtn.setAttribute(
+                    'title',
+                    uiDict[lang].play
+                );
 
             } else {
 
                 playBtn.classList.add('is-playing');
 
-                playBtn.setAttribute('aria-label', '暫停');
-                playBtn.setAttribute('title', '暫停');
+                playBtn.setAttribute(
+                    'aria-label',
+                    uiDict[lang].pause
+                );
+
+                playBtn.setAttribute(
+                    'title',
+                    uiDict[lang].pause
+                );
 
             }
-
         }
 
 
@@ -573,16 +593,18 @@
                 data.title[lang];
 
             // 更新圖片
-            document.getElementById('coverImg').src =
-                data.image;
+            const coverImg = document.getElementById('coverImg');
+
+            coverImg.src = data.image;
+            coverImg.alt = data.title[lang];
 
             // 更新音訊
             audio.src = data.audio;
-
             audio.load();
 
             // 重設進度
             progressBar.value = 0;
+            progressBar.max = 100;
 
             currentTimeEl.innerText = '0:00';
             durationEl.innerText = '0:00';
@@ -598,7 +620,6 @@
                 '',
                 '?sound=' + soundKey
             );
-
         }
 
 
@@ -613,11 +634,9 @@
             }
 
             const m = Math.floor(seconds / 60);
-
             const s = Math.floor(seconds % 60);
 
             return m + ':' + (s < 10 ? '0' : '') + s;
-
         }
 
 
@@ -630,13 +649,9 @@
             if (audio.paused) {
 
                 try {
-
                     await audio.play();
-
                 } catch (error) {
-
                     console.error('播放失敗：', error);
-
                 }
 
             } else {
@@ -644,7 +659,6 @@
                 audio.pause();
 
             }
-
         });
 
 
@@ -682,17 +696,12 @@
             if (wasPlaying) {
 
                 try {
-
                     await audio.play();
-
                 } catch (error) {
-
                     console.error(error);
-
                 }
 
             }
-
         });
 
 
@@ -709,17 +718,12 @@
             if (wasPlaying) {
 
                 try {
-
                     await audio.play();
-
                 } catch (error) {
-
                     console.error(error);
-
                 }
 
             }
-
         });
 
 
@@ -767,9 +771,7 @@
         // =========================
 
         audio.addEventListener('play', updatePlayButton);
-
         audio.addEventListener('pause', updatePlayButton);
-
         audio.addEventListener('ended', updatePlayButton);
 
 
@@ -792,7 +794,7 @@
         // =========================
 
         loadSound(
-            soundData[currentSound] ? currentSound : 'drums'
+            soundData[currentSound] ? currentSound : 'single_1'
         );
 
     </script>
