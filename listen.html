@@ -38,7 +38,7 @@
             width: 100%;
             max-width: 440px;
             margin-bottom: 25px;
-            text-align: left;
+            text-align: center; /* 改為置中 */
         }
 
         .header a {
@@ -47,6 +47,7 @@
             font-weight: bold;
             font-size: 1.05rem;
             transition: color 0.2s;
+            display: inline-block;
         }
 
         .header a:active {
@@ -250,7 +251,7 @@
     <!-- 返回介紹頁 -->
     <div class="header">
         <a href="intro.html" id="btnBack">
-            ← 回介紹頁
+            ← 回前頁
         </a>
     </div>
 
@@ -270,7 +271,7 @@
         </h2>
 
         <p class="track-artist" id="subtitle">
-            原始素材試聽
+            聲音素材試聽
         </p>
 
 
@@ -428,15 +429,15 @@
         const uiDict = {
 
             zh: {
-                back: '← 回介紹頁',
-                subtitle: '原始素材試聽',
+                back: '← 回前頁',
+                subtitle: '聲音素材試聽',
                 loading: '載入中...',
                 error: '音訊載入失敗'
             },
 
             en: {
-                back: '← Back to Intro',
-                subtitle: 'Raw Material Preview',
+                back: '← Back',
+                subtitle: 'Sound Material Preview',
                 loading: 'Loading...',
                 error: 'Audio loading failed'
             }
