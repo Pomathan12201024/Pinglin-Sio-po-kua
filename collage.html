@@ -1,261 +1,1130 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電音拼貼</title>
+    <title>相褒歌拼貼｜一心二葉・坪心而唱</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
     <style>
-        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; padding-bottom: 100px; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .header a { text-decoration: none; color: #0a84ff; font-weight: bold; font-size: 1.1rem; display: inline-block; margin-bottom: 10px; }
-        .slot-container { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; }
-        .slot { background-color: #2c2c2e; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, opacity 0.2s; }
-        .slot.active { border-color: #0a84ff; background-color: #1c1c1e; }
-        .slot-info h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
-        .slot-info p { margin: 0; color: #8e8e93; font-size: 0.9rem; }
-        
-        /* 🔒 播放時鎖定素材槽的樣式 */
+        :root {
+            --forest: #385C45;
+            --tea: #789477;
+            --cream: #F5F4EC;
+            --paper: #E9E8D8;
+            --earth: #B9A47C;
+            --text: #333D34;
+            --muted: #858B82;
+            --white: #FFFFFF;
+            --shadow: 0 8px 25px rgba(56, 92, 69, 0.09);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px 20px 125px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* 頁面標題 */
+
+        .header {
+            text-align: center;
+            margin: 10px auto 35px;
+            max-width: 500px;
+        }
+
+        .header a {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--forest);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 18px;
+            transition: opacity 0.2s;
+        }
+
+        .header a:hover {
+            opacity: 0.7;
+        }
+
+        .header h2 {
+            color: var(--forest);
+            font-size: 1.65rem;
+            margin: 0 0 12px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* 素材選擇區 */
+
+        .slot-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .slot {
+            width: 100%;
+            background: var(--white);
+            border: 2px solid transparent;
+            border-radius: 18px;
+            padding: 23px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            color: var(--text);
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+        }
+
+        .slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(56, 92, 69, 0.13);
+        }
+
+        .slot.active {
+            border-color: var(--tea);
+            background-color: #F0F4ED;
+        }
+
+        .slot-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .slot-info h3 {
+            margin: 0 0 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--forest);
+        }
+
+        .slot-info p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .slot-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--tea);
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .slot.active .slot-icon {
+            color: var(--forest);
+        }
+
+        .slot-icon svg {
+            width: 27px;
+            height: 27px;
+        }
+
+        /* 播放時鎖定 */
+
         .slot.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
-            border-color: transparent;
+            transform: none;
         }
 
-        .global-play-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(28, 28, 30, 0.95); padding: 20px; box-sizing: border-box; display: flex; justify-content: center; border-top: 1px solid #333; }
-        .btn-global-play { background-color: #30d158; color: black; font-size: 1.3rem; font-weight: bold; padding: 15px 40px; border-radius: 30px; border: none; width: 100%; max-width: 400px; opacity: 0.4; pointer-events: none; transition: all 0.3s; }
-        .btn-global-play.ready { opacity: 1; pointer-events: auto; cursor: pointer; box-shadow: 0 0 15px rgba(48, 209, 88, 0.4); }
-        .btn-global-play.playing { background-color: #ff453a; box-shadow: 0 0 15px rgba(255, 69, 58, 0.4); color: white; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal.show { display: flex; }
-        .modal-content { background: #1c1c1e; width: 90%; max-width: 400px; border-radius: 16px; padding: 20px; max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .modal-header h3 { margin: 0; }
-        .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        .option-item { background: #2c2c2e; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .option-controls { display: flex; align-items: center; gap: 15px; }
-        .preview-btn { background: #0a84ff; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
-        .select-btn { background: white; color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        /* 底部播放區 */
+
+        .global-play-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            background: rgba(245, 244, 236, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(56, 92, 69, 0.1);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .btn-global-play {
+            width: 100%;
+            max-width: 500px;
+            padding: 17px 25px;
+            border: none;
+            border-radius: 30px;
+            background: var(--paper);
+            color: var(--muted);
+            font-size: 1.15rem;
+            font-weight: bold;
+            transition: all 0.25s ease;
+            cursor: not-allowed;
+        }
+
+        .btn-global-play.ready {
+            background: var(--forest);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(56, 92, 69, 0.2);
+        }
+
+        .btn-global-play.ready:active {
+            transform: scale(0.98);
+        }
+
+        .btn-global-play.playing {
+            background: var(--earth);
+            color: white;
+            box-shadow: 0 5px 15px rgba(185, 164, 124, 0.25);
+        }
+
+        /* 素材選擇彈出視窗 */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(35, 47, 37, 0.55);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 22px;
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--paper);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--forest);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .close-btn svg {
+            width: 25px;
+            height: 25px;
+        }
+
+        /* 素材選項 */
+
+        .option-item {
+            background: var(--cream);
+            border: 1px solid transparent;
+            border-radius: 13px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .option-item.selected {
+            border-color: var(--tea);
+            background: #F0F4ED;
+        }
+
+        .option-name {
+            font-weight: bold;
+            color: var(--forest);
+            margin-bottom: 5px;
+        }
+
+        .selected-mark {
+            font-size: 0.8rem;
+            color: var(--tea);
+        }
+
+        .option-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .preview-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--tea);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .preview-btn:hover {
+            background: var(--forest);
+        }
+
+        .preview-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .select-btn {
+            background: var(--forest);
+            color: white;
+            border: none;
+            padding: 10px 17px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .select-btn:hover {
+            background: var(--tea);
+        }
+
+        /* 手機版調整 */
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 18px 120px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h2 {
+                font-size: 1.5rem;
+            }
+
+            .slot {
+                padding: 21px 18px;
+            }
+
+            .slot-info h3 {
+                font-size: 1.1rem;
+            }
+
+            .global-play-container {
+                padding: 15px 18px;
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+            }
+        }
+
     </style>
 </head>
+
 <body>
+
+    <!-- 頁面標題 -->
 
     <div class="header">
         <a href="index.html" id="ui-back">← 回到主頁</a>
+
         <h2 id="ui-title">你的拼貼工作站</h2>
-        <p style="color:#888; font-size:0.9rem;" id="ui-desc">點擊下方區塊選擇素材，全部選滿即可播放</p>
+
+        <p id="ui-desc">
+            點擊下方區塊選擇素材，全部選滿即可播放
+        </p>
     </div>
+
+
+    <!-- 三個素材軌道 -->
 
     <div class="slot-container">
-        <div class="slot" id="slot-drums" onclick="openModal('drums')">
+
+        <button class="slot" id="slot-drums"
+            onclick="openModal('drums')">
+
             <div class="slot-info">
                 <h3 id="ui-slot-drums">相褒歌鼓組</h3>
-                <p id="label-drums" class="label-status">尚未選擇...</p>
+                <p id="label-drums" class="label-status">
+                    尚未選擇...
+                </p>
             </div>
-            <div class="slot-icon">➕</div>
-        </div>
-        
-        <div class="slot" id="slot-lead" onclick="openModal('lead')">
+
+            <div class="slot-icon" id="icon-drums">
+                <!-- 加號圖示 -->
+                <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </div>
+
+        </button>
+
+
+        <button class="slot" id="slot-lead"
+            onclick="openModal('lead')">
+
             <div class="slot-info">
                 <h3 id="ui-slot-lead">相褒歌主旋律</h3>
-                <p id="label-lead" class="label-status">尚未選擇...</p>
+                <p id="label-lead" class="label-status">
+                    尚未選擇...
+                </p>
             </div>
-            <div class="slot-icon">➕</div>
-        </div>
 
-        <div class="slot" id="slot-pad" onclick="openModal('pad')">
+            <div class="slot-icon" id="icon-lead">
+                <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </div>
+
+        </button>
+
+
+        <button class="slot" id="slot-pad"
+            onclick="openModal('pad')">
+
             <div class="slot-info">
                 <h3 id="ui-slot-pad">坪林河流</h3>
-                <p id="label-pad" class="label-status">尚未選擇...</p>
+                <p id="label-pad" class="label-status">
+                    尚未選擇...
+                </p>
             </div>
-            <div class="slot-icon">➕</div>
-        </div>
+
+            <div class="slot-icon" id="icon-pad">
+                <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </div>
+
+        </button>
+
     </div>
+
+
+    <!-- 底部共同播放按鈕 -->
 
     <div class="global-play-container">
-        <button id="globalPlayBtn" class="btn-global-play">需填滿所有軌道</button>
+
+        <button id="globalPlayBtn" class="btn-global-play">
+            需填滿所有軌道
+        </button>
+
     </div>
+
+
+    <!-- 素材選擇視窗 -->
 
     <div id="selectionModal" class="modal">
+
         <div class="modal-content">
+
             <div class="modal-header">
+
                 <h3 id="modalTitle">選擇素材</h3>
-                <button class="close-btn" onclick="closeModal()">×</button>
+
+                <button class="close-btn"
+                    onclick="closeModal()"
+                    aria-label="Close">
+
+                    <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+
+                </button>
+
             </div>
+
             <div id="modalList"></div>
+
         </div>
+
     </div>
 
+
     <script>
+
+        // ==========================
+        // 語言設定
+        // ==========================
+
         const lang = localStorage.getItem('prefLang') || 'zh';
 
-        // 語言字典
         const dict = {
-            'zh': {
-                'back': '← 回到主頁', 'title': '你的拼貼工作站', 'desc': '點擊下方區塊選擇素材，全部選滿即可播放',
-                'slotDrums': '相褒歌鼓組', 'slotlead': '相褒歌主旋律', 'slotpad': '坪林河流',
-                'notSelected': '尚未選擇...', 'btnNotReady': '需填滿所有軌道', 'btnPlay': '▶ 共同播放',
-                'btnStop': '⏸ 停止播放', 'btnLoading': '載入對軌中...',
-                'modalSelect': '選擇', 'selectedMark': '✅ 目前選擇', 'selectBtn': '選擇'
+
+            zh: {
+                back: '← 回到主頁',
+                title: '你的拼貼工作站',
+                desc: '點擊下方區塊選擇素材，全部選滿即可播放',
+
+                slotDrums: '相褒歌鼓組',
+                slotLead: '相褒歌主旋律',
+                slotPad: '坪林河流',
+
+                notSelected: '尚未選擇...',
+                btnNotReady: '需填滿所有軌道',
+                btnPlay: '▶ 共同播放',
+                btnStop: '■ 停止播放',
+                btnLoading: '載入素材中...',
+
+                modalSelect: '選擇',
+                selectedMark: '目前選擇',
+                selectBtn: '選擇',
+                none: '無'
             },
-            'en': {
-                'back': '← Back to Home', 'title': 'Your Collage Station', 'desc': 'Click slots below to select materials. Fill all to play.',
-                'slotDrums': 'Drums', 'slotlead': 'Lead', 'slotpad': 'River Pad',
-                'notSelected': 'Not selected...', 'btnNotReady': 'Fill all tracks', 'btnPlay': '▶ Play All',
-                'btnStop': '⏸ Stop', 'btnLoading': 'Loading sync...',
-                'modalSelect': 'Select ', 'selectedMark': '✅ Selected', 'selectBtn': 'Select'
+
+            en: {
+                back: '← Back to Home',
+                title: 'Your Collage Station',
+                desc: 'Choose materials for each track. Fill all tracks to play.',
+
+                slotDrums: 'Drums',
+                slotLead: 'Lead Melody',
+                slotPad: 'Pinglin River',
+
+                notSelected: 'Not selected...',
+                btnNotReady: 'Fill all tracks',
+                btnPlay: '▶ Play All',
+                btnStop: '■ Stop',
+                btnLoading: 'Loading materials...',
+
+                modalSelect: 'Select',
+                selectedMark: 'Currently selected',
+                selectBtn: 'Select',
+                none: 'None'
             }
+
         };
+
+
+        // ==========================
+        // 素材資料庫
+        // ==========================
 
         const library = {
+
             drums: [
-                { id: 'd1', name: { 'zh': '鼓組', 'en': 'Drum' }, url: 'audio/sio_po_kua_drum.mp3' },
-                { id: 'd2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
+                {
+                    id: 'd1',
+                    name: { zh: '鼓組', en: 'Drums' },
+                    url: 'audio/sio_po_kua_drum.mp3'
+                },
+                {
+                    id: 'd2',
+                    name: { zh: '無', en: 'None' },
+                    url: 'none'
+                }
             ],
+
             lead: [
-                { id: 'l1', name: { 'zh': '主旋律', 'en': 'Lead' }, url: 'audio/sio_po_kua_lead.mp3' },
-                { id: 'l2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
+                {
+                    id: 'l1',
+                    name: { zh: '主旋律', en: 'Lead Melody' },
+                    url: 'audio/sio_po_kua_lead.mp3'
+                },
+                {
+                    id: 'l2',
+                    name: { zh: '無', en: 'None' },
+                    url: 'none'
+                }
             ],
+
             pad: [
-                { id: 'p1', name: { 'zh': '河流', 'en': 'River' }, url: 'audio/sio_po_kua_river.mp3' },
-                { id: 'p2', name: { 'zh': '無', 'en': 'None' }, url: 'none' }
+                {
+                    id: 'p1',
+                    name: { zh: '河流', en: 'River' },
+                    url: 'audio/sio_po_kua_river.mp3'
+                },
+                {
+                    id: 'p2',
+                    name: { zh: '無', en: 'None' },
+                    url: 'none'
+                }
             ]
+
         };
 
-        document.getElementById('ui-back').innerText = dict[lang].back;
-        document.getElementById('ui-title').innerText = dict[lang].title;
-        document.getElementById('ui-desc').innerText = dict[lang].desc;
-        document.getElementById('ui-slot-drums').innerText = dict[lang].slotDrums;
-        document.getElementById('ui-slot-lead').innerText = dict[lang].slotlead;
-        document.getElementById('ui-slot-pad').innerText = dict[lang].slotpad;
-        document.querySelectorAll('.label-status').forEach(el => el.innerText = dict[lang].notSelected);
-        document.getElementById('globalPlayBtn').innerText = dict[lang].btnNotReady;
 
-        let currentSelection = { drums: null, lead: null, pad: null };
-        let activeCategory = ''; 
-        let previewAudio = new Audio(); 
-        let tonePlayers = {}; 
+        // ==========================
+        // 套用語言
+        // ==========================
+
+        document.getElementById('ui-back').innerText = dict[lang].back;
+
+        document.getElementById('ui-title').innerText = dict[lang].title;
+
+        document.getElementById('ui-desc').innerText = dict[lang].desc;
+
+        document.getElementById('ui-slot-drums').innerText = dict[lang].slotDrums;
+
+        document.getElementById('ui-slot-lead').innerText = dict[lang].slotLead;
+
+        document.getElementById('ui-slot-pad').innerText = dict[lang].slotPad;
+
+        document.querySelectorAll('.label-status').forEach(el => {
+            el.innerText = dict[lang].notSelected;
+        });
+
+
+        // ==========================
+        // 狀態變數
+        // ==========================
+
+        let currentSelection = {
+            drums: null,
+            lead: null,
+            pad: null
+        };
+
+        let activeCategory = '';
+
+        let previewAudio = new Audio();
+
+        let tonePlayers = {};
+
         let isPlaying = false;
 
+        let isLoading = false;
+
+
         const modal = document.getElementById('selectionModal');
+
         const modalList = document.getElementById('modalList');
+
         const modalTitle = document.getElementById('modalTitle');
+
         const globalPlayBtn = document.getElementById('globalPlayBtn');
 
-        // 🎧 監聽：當音檔播放完畢時，自動將所有試聽按鈕恢復成 ▶
+
+        // ==========================
+        // SVG 圖示
+        // ==========================
+
+        function getIcon(name) {
+
+            const icons = {
+
+                plus: `
+                    <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                `,
+
+                check: `
+                    <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12l5 5L20 7"/>
+                    </svg>
+                `,
+
+                play: `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 4.5v15l12-7.5z"/>
+                    </svg>
+                `,
+
+                pause: `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+                    </svg>
+                `
+
+            };
+
+            return icons[name] || '';
+        }
+
+
+        // ==========================
+        // 試聽音檔結束
+        // ==========================
+
         previewAudio.addEventListener('ended', () => {
-            document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
+
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.innerHTML = getIcon('play');
+            });
+
         });
+
+
+        // ==========================
+        // 開啟素材選擇視窗
+        // ==========================
 
         function openModal(category) {
-            if (isPlaying) return; 
+
+            if (isPlaying || isLoading) return;
 
             activeCategory = category;
-            const catName = category === 'drums' ? dict[lang].slotDrums : (category === 'lead' ? dict[lang].slotlead : dict[lang].slotpad);
-            modalTitle.innerText = dict[lang].modalSelect + ' ' + catName;
-            
+
+            const catName = dict[lang][
+                category === 'drums'
+                    ? 'slotDrums'
+                    : category === 'lead'
+                        ? 'slotLead'
+                        : 'slotPad'
+            ];
+
+            modalTitle.innerText =
+                dict[lang].modalSelect + ' ' + catName;
+
             modalList.innerHTML = '';
+
             library[category].forEach(item => {
-                const isSelected = currentSelection[category] && currentSelection[category].id === item.id;
-                const itemName = item.name[lang]; 
-                
+
+                const isSelected =
+                    currentSelection[category] &&
+                    currentSelection[category].id === item.id;
+
+                const itemName = item.name[lang];
+
                 const div = document.createElement('div');
-                div.className = 'option-item';
+
+                div.className =
+                    'option-item' + (isSelected ? ' selected' : '');
+
                 div.innerHTML = `
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; margin-bottom:5px;">${itemName}</div>
-                        ${isSelected ? `<span style="font-size:0.8rem; color:#30d158;">${dict[lang].selectedMark}</span>` : ''}
+
+                    <div style="flex:1; min-width:0;">
+
+                        <div class="option-name">
+                            ${itemName}
+                        </div>
+
+                        ${
+                            isSelected
+                                ? `<span class="selected-mark">
+                                    ✓ ${dict[lang].selectedMark}
+                                   </span>`
+                                : ''
+                        }
+
                     </div>
+
                     <div class="option-controls">
-                        ${item.url !== 'none' ? `<button class="preview-btn" onclick="togglePreview('${item.url}', this)">▶</button>` : ''}
-                        <button class="select-btn" onclick="selectItem('${item.id}', '${itemName}', '${item.url}')">${dict[lang].selectBtn}</button>
+
+                        ${
+                            item.url !== 'none'
+                                ? `
+                                <button class="preview-btn"
+                                    onclick="togglePreview('${item.url}', this)"
+                                    aria-label="Preview">
+                                    ${getIcon('play')}
+                                </button>
+                                `
+                                : ''
+                        }
+
+                        <button class="select-btn"
+                            onclick="selectItem('${item.id}')">
+                            ${dict[lang].selectBtn}
+                        </button>
+
                     </div>
+
                 `;
+
                 modalList.appendChild(div);
+
             });
+
             modal.classList.add('show');
+
         }
+
+
+        // ==========================
+        // 關閉素材選擇視窗
+        // ==========================
 
         function closeModal() {
+
             modal.classList.remove('show');
+
             previewAudio.pause();
-            document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
+
+            previewAudio.currentTime = 0;
+
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.innerHTML = getIcon('play');
+            });
+
         }
+
+
+        // 點擊視窗外部關閉
+
+        modal.addEventListener('click', (e) => {
+
+            if (e.target === modal) {
+                closeModal();
+            }
+
+        });
+
+
+        // ==========================
+        // 試聽功能
+        // ==========================
 
         function togglePreview(url, btn) {
+
             if (url === 'none') return;
-            if (previewAudio.src && previewAudio.src.includes(encodeURI(url)) && !previewAudio.paused) {
+
+            if (
+                previewAudio.src &&
+                previewAudio.src.includes(encodeURI(url)) &&
+                !previewAudio.paused
+            ) {
+
                 previewAudio.pause();
-                btn.innerText = '▶';
+
+                btn.innerHTML = getIcon('play');
+
             } else {
+
+                previewAudio.pause();
+
+                document.querySelectorAll('.preview-btn').forEach(b => {
+                    b.innerHTML = getIcon('play');
+                });
+
                 previewAudio.src = url;
-                previewAudio.play();
-                document.querySelectorAll('.preview-btn').forEach(b => b.innerText = '▶');
-                btn.innerText = '⏸';
+
+                previewAudio.play()
+                    .then(() => {
+                        btn.innerHTML = getIcon('pause');
+                    })
+                    .catch(error => {
+                        console.error('Preview playback failed:', error);
+                        btn.innerHTML = getIcon('play');
+                    });
+
             }
+
         }
 
-        function selectItem(id, name, url) {
-            currentSelection[activeCategory] = { id, name, url };
-            document.getElementById(`label-${activeCategory}`).innerText = name;
-            document.getElementById(`slot-${activeCategory}`).classList.add('active');
+
+        // ==========================
+        // 選擇素材
+        // ==========================
+
+        function selectItem(id) {
+
+            const item = library[activeCategory].find(
+                item => item.id === id
+            );
+
+            if (!item) return;
+
+            currentSelection[activeCategory] = {
+                id: item.id,
+                name: item.name[lang],
+                url: item.url
+            };
+
+            // 更新素材名稱
+
+            document.getElementById(
+                `label-${activeCategory}`
+            ).innerText = item.name[lang];
+
+            // 更新選取狀態
+
+            document.getElementById(
+                `slot-${activeCategory}`
+            ).classList.add('active');
+
+            // 將加號改為勾選圖示
+
+            document.getElementById(
+                `icon-${activeCategory}`
+            ).innerHTML = getIcon('check');
+
             closeModal();
+
             checkReadyStatus();
+
         }
+
+
+        // ==========================
+        // 檢查是否可以播放
+        // ==========================
 
         function checkReadyStatus() {
-            const isReady = currentSelection.drums && currentSelection.lead && currentSelection.pad;
+
+            const isReady =
+                currentSelection.drums !== null &&
+                currentSelection.lead !== null &&
+                currentSelection.pad !== null;
+
             if (isReady && !isPlaying) {
+
                 globalPlayBtn.classList.add('ready');
+
                 globalPlayBtn.innerText = dict[lang].btnPlay;
+
+            } else if (!isReady) {
+
+                globalPlayBtn.classList.remove('ready');
+
+                globalPlayBtn.classList.remove('playing');
+
+                globalPlayBtn.innerText = dict[lang].btnNotReady;
+
             }
+
         }
 
-        globalPlayBtn.addEventListener('click', async () => {
-            if (!currentSelection.drums || !currentSelection.lead || !currentSelection.pad) return;
 
-            if (isPlaying) {
-                Tone.Transport.stop();
-                globalPlayBtn.classList.remove('playing');
-                globalPlayBtn.innerText = dict[lang].btnPlay;
-                
-                document.querySelectorAll('.slot').forEach(el => el.classList.remove('disabled'));
-                
-                isPlaying = false;
-                return;
-            }
+        // ==========================
+        // 銷毀舊播放器
+        // ==========================
 
-            globalPlayBtn.innerText = dict[lang].btnLoading;
-            await Tone.start();
-            Tone.Transport.stop(); 
+        function disposePlayers() {
 
-            Object.values(tonePlayers).forEach(player => player.dispose());
+            Object.values(tonePlayers).forEach(player => {
+                player.stop();
+                player.dispose();
+            });
+
             tonePlayers = {};
 
-            if (currentSelection.drums.url !== 'none') {
-                tonePlayers.drums = new Tone.Player(currentSelection.drums.url).toDestination().sync().start(0);
-                tonePlayers.drums.loop = true;
-            }
-            if (currentSelection.lead.url !== 'none') {
-                tonePlayers.lead = new Tone.Player(currentSelection.lead.url).toDestination().sync().start(0);
-                tonePlayers.lead.loop = true;
-            }
-            if (currentSelection.pad.url !== 'none') {
-                tonePlayers.pad = new Tone.Player(currentSelection.pad.url).toDestination().sync().start(0);
-                tonePlayers.pad.loop = true;
+        }
+
+
+        // ==========================
+        // 共同播放功能
+        // ==========================
+
+        globalPlayBtn.addEventListener('click', async () => {
+
+            if (isLoading) return;
+
+            const isReady =
+                currentSelection.drums !== null &&
+                currentSelection.lead !== null &&
+                currentSelection.pad !== null;
+
+            if (!isReady) return;
+
+
+            // 如果正在播放，則停止
+
+            if (isPlaying) {
+
+                Tone.Transport.stop();
+
+                Tone.Transport.cancel();
+
+                disposePlayers();
+
+                globalPlayBtn.classList.remove('playing');
+
+                globalPlayBtn.innerText = dict[lang].btnPlay;
+
+                document.querySelectorAll('.slot').forEach(el => {
+                    el.classList.remove('disabled');
+                });
+
+                isPlaying = false;
+
+                checkReadyStatus();
+
+                return;
+
             }
 
-            await Tone.loaded();
-            Tone.Transport.start();
-            
-            globalPlayBtn.classList.add('playing');
-            globalPlayBtn.innerText = dict[lang].btnStop;
-            
-            document.querySelectorAll('.slot').forEach(el => el.classList.add('disabled'));
-            
-            isPlaying = true;
+
+            // 開始播放
+
+            isLoading = true;
+
+            globalPlayBtn.innerText = dict[lang].btnLoading;
+
+            try {
+
+                await Tone.start();
+
+                Tone.Transport.stop();
+
+                Tone.Transport.cancel();
+
+                disposePlayers();
+
+
+                // 建立鼓組播放器
+
+                if (currentSelection.drums.url !== 'none') {
+
+                    tonePlayers.drums = new Tone.Player(
+                        currentSelection.drums.url
+                    ).toDestination();
+
+                    tonePlayers.drums.loop = true;
+
+                    tonePlayers.drums.sync().start(0);
+
+                }
+
+
+                // 建立主旋律播放器
+
+                if (currentSelection.lead.url !== 'none') {
+
+                    tonePlayers.lead = new Tone.Player(
+                        currentSelection.lead.url
+                    ).toDestination();
+
+                    tonePlayers.lead.loop = true;
+
+                    tonePlayers.lead.sync().start(0);
+
+                }
+
+
+                // 建立環境音播放器
+
+                if (currentSelection.pad.url !== 'none') {
+
+                    tonePlayers.pad = new Tone.Player(
+                        currentSelection.pad.url
+                    ).toDestination();
+
+                    tonePlayers.pad.loop = true;
+
+                    tonePlayers.pad.sync().start(0);
+
+                }
+
+
+                // 等待素材載入完成
+
+                await Tone.loaded();
+
+                Tone.Transport.start();
+
+
+                // 更新播放狀態
+
+                isPlaying = true;
+
+                globalPlayBtn.classList.add('playing');
+
+                globalPlayBtn.innerText = dict[lang].btnStop;
+
+
+                // 鎖定素材選擇
+
+                document.querySelectorAll('.slot').forEach(el => {
+                    el.classList.add('disabled');
+                });
+
+
+            } catch (error) {
+
+                console.error('Playback error:', error);
+
+                Tone.Transport.stop();
+
+                Tone.Transport.cancel();
+
+                disposePlayers();
+
+                globalPlayBtn.innerText = dict[lang].btnPlay;
+
+            } finally {
+
+                isLoading = false;
+
+            }
+
         });
+
+
+        // ==========================
+        // 初始化
+        // ==========================
+
+        globalPlayBtn.innerText = dict[lang].btnNotReady;
+
     </script>
+
 </body>
 </html>
