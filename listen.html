@@ -90,7 +90,7 @@
             margin: 0 0 30px 0;
         }
 
-        /* 進度條 */
+        /* 播放進度 */
         .progress-container {
             width: 100%;
             margin-bottom: 28px;
@@ -110,7 +110,7 @@
             margin-top: 8px;
         }
 
-        /* 播放控制 */
+        /* 播放控制區 */
         .controls {
             display: flex;
             align-items: center;
@@ -125,8 +125,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #555555;
+            color: #444444;
+            padding: 0;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+        }
+
+        /* SVG 圖示統一設定 */
+        .btn svg {
+            display: block;
+            width: 25px;
+            height: 25px;
         }
 
         /* 播放按鈕 */
@@ -136,9 +145,13 @@
             background-color: var(--primary);
             color: white;
             border-radius: 50%;
-            font-size: 1.8rem;
             box-shadow: 0 5px 13px rgba(73, 107, 80, 0.25);
-            transition: transform 0.15s, background-color 0.2s;
+            transition: all 0.2s;
+        }
+
+        .btn-play svg {
+            width: 31px;
+            height: 31px;
         }
 
         .btn-play:active {
@@ -146,31 +159,73 @@
             background-color: var(--primary-dark);
         }
 
+        /* 播放中：暫停按鈕 */
+        .btn-play.is-playing {
+            background: transparent;
+            color: #333333;
+            box-shadow: none;
+            border-radius: 0;
+            transform: none;
+        }
+
+        .btn-play.is-playing:active {
+            background: transparent;
+            color: var(--primary);
+        }
+
+        .play-icon {
+            display: block;
+        }
+
+        .pause-icon {
+            display: none;
+        }
+
+        .btn-play.is-playing .play-icon {
+            display: none;
+        }
+
+        .btn-play.is-playing .pause-icon {
+            display: block;
+        }
+
         /* 上一首、下一首 */
         .btn-skip {
-            font-size: 1.45rem;
             width: 43px;
             height: 43px;
             border-radius: 50%;
             border: 2px solid var(--border-color);
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .btn-skip svg {
+            width: 23px;
+            height: 23px;
         }
 
         .btn-skip:active {
             background-color: var(--primary-light);
+            color: var(--primary);
         }
 
-        /* 循環播放 */
+        /* 單曲循環 */
         .btn-loop {
-            font-size: 1.3rem;
-            color: #bbbbbb;
+            width: 38px;
+            height: 38px;
+            color: #aaaaaa;
             transition: color 0.2s;
+        }
+
+        .btn-loop svg {
+            width: 27px;
+            height: 27px;
         }
 
         .btn-loop.active {
             color: var(--primary);
         }
 
+        /* 鍵盤操作焦點 */
         button:focus-visible,
         a:focus-visible,
         input:focus-visible {
@@ -178,7 +233,7 @@
             outline-offset: 4px;
         }
 
-        /* 手機版微調 */
+        /* 手機版調整 */
         @media (max-width: 380px) {
             .player-card {
                 padding: 25px 18px;
@@ -192,18 +247,27 @@
             .controls {
                 gap: 12px;
             }
+
+            .btn-play {
+                width: 68px;
+                height: 68px;
+            }
         }
+
     </style>
 </head>
 
 <body>
 
+    <!-- 返回介紹頁 -->
     <div class="header">
         <a href="intro.html" id="btnBack">
             ← 回介紹頁
         </a>
     </div>
 
+
+    <!-- 播放器 -->
     <div class="player-card">
 
         <img
@@ -220,6 +284,7 @@
         <p class="track-artist" id="subtitle">
             原始素材試聽
         </p>
+
 
         <!-- 播放進度 -->
         <div class="progress-container">
@@ -241,59 +306,139 @@
 
         </div>
 
+
         <!-- 播放控制 -->
         <div class="controls">
 
+            <!-- 單曲循環 -->
             <button
                 class="btn btn-loop active"
                 id="loopBtn"
                 type="button"
-                aria-label="循環播放"
+                aria-label="單曲循環"
                 aria-pressed="true"
+                title="單曲循環"
             >
-                ↻
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <!-- 上方箭頭 -->
+                    <path d="M17 2l3 3-3 3"/>
+                    <path d="M20 5H9a6 6 0 0 0-5.2 3"/>
+
+                    <!-- 下方箭頭 -->
+                    <path d="M7 22l-3-3 3-3"/>
+                    <path d="M4 19h11a6 6 0 0 0 5.2-3"/>
+
+                    <!-- 數字 1 -->
+                    <text
+                        x="12"
+                        y="15.2"
+                        font-size="6.5"
+                        font-weight="bold"
+                        fill="currentColor"
+                        stroke="none"
+                        text-anchor="middle"
+                    >1</text>
+
+                </svg>
+
             </button>
 
+
+            <!-- 上一首 -->
             <button
                 class="btn btn-skip"
                 id="prevBtn"
                 type="button"
                 aria-label="上一首"
+                title="上一首"
             >
-                ⏮
+
+                <svg viewBox="0 0 24 24"
+                     fill="currentColor">
+
+                    <path d="M5 4h2v16H5z"/>
+                    <path d="M19 4L8 12l11 8z"/>
+
+                </svg>
+
             </button>
 
+
+            <!-- 播放 / 暫停 -->
             <button
                 class="btn btn-play"
                 id="playBtn"
                 type="button"
                 aria-label="播放"
+                title="播放"
             >
-                ▶
+
+                <!-- 播放圖示 -->
+                <svg
+                    class="play-icon"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                >
+                    <path d="M6 3.5L20 12 6 20.5z"/>
+                </svg>
+
+                <!-- 暫停圖示 -->
+                <svg
+                    class="pause-icon"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                >
+                    <rect x="6" y="4" width="4" height="16" rx="0.8"/>
+                    <rect x="14" y="4" width="4" height="16" rx="0.8"/>
+                </svg>
+
             </button>
 
+
+            <!-- 下一首 -->
             <button
                 class="btn btn-skip"
                 id="nextBtn"
                 type="button"
                 aria-label="下一首"
+                title="下一首"
             >
-                ⏭
+
+                <svg viewBox="0 0 24 24"
+                     fill="currentColor">
+
+                    <path d="M17 4h2v16h-2z"/>
+                    <path d="M5 4l11 8-11 8z"/>
+
+                </svg>
+
             </button>
 
         </div>
 
     </div>
 
+
     <audio id="audioPlayer" loop></audio>
+
 
     <script>
 
-        // 讀取語言設定
+        // =========================
+        // 語言設定
+        // =========================
+
         const lang = localStorage.getItem('prefLang') || 'zh';
 
-        // 介面文字
         const uiDict = {
+
             zh: {
                 back: '← 回介紹頁',
                 subtitle: '原始素材試聽',
@@ -307,7 +452,9 @@
                 loading: 'Loading...',
                 error: 'Audio loading failed'
             }
+
         };
+
 
         document.getElementById('btnBack').innerText =
             uiDict[lang].back;
@@ -319,7 +466,10 @@
             uiDict[lang].loading;
 
 
-        // 雙語素材資料庫
+        // =========================
+        // 素材資料庫
+        // =========================
+
         const soundData = {
 
             drums: {
@@ -327,8 +477,11 @@
                     zh: '相褒歌鼓組',
                     en: 'Sio-Po-Kua Drums'
                 },
+
                 image: 'images/photo_2_1.jpg',
+
                 audio: 'audio/sio_po_kua_drum.mp3',
+
                 prev: 'pad',
                 next: 'lead'
             },
@@ -338,8 +491,11 @@
                     zh: '相褒歌主旋律',
                     en: 'Sio-Po-Kua Lead'
                 },
+
                 image: 'images/photo_2_2.jpg',
+
                 audio: 'audio/sio_po_kua_lead.mp3',
+
                 prev: 'drums',
                 next: 'pad'
             },
@@ -349,8 +505,11 @@
                     zh: '坪林河流',
                     en: 'Pinglin River'
                 },
+
                 image: 'images/photo_2_3.jpg',
+
                 audio: 'audio/sio_po_kua_river.mp3',
+
                 prev: 'lead',
                 next: 'drums'
             }
@@ -358,7 +517,10 @@
         };
 
 
-        // 取得網址參數
+        // =========================
+        // 取得網頁元素
+        // =========================
+
         const urlParams = new URLSearchParams(
             window.location.search
         );
@@ -366,55 +528,77 @@
         let currentSound = urlParams.get('sound') || 'drums';
 
         const audio = document.getElementById('audioPlayer');
+
         const playBtn = document.getElementById('playBtn');
         const loopBtn = document.getElementById('loopBtn');
+
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
 
         const progressBar = document.getElementById('progressBar');
+
         const currentTimeEl = document.getElementById('currentTime');
         const durationEl = document.getElementById('duration');
 
 
-        // 更新播放按鈕狀態
+        // =========================
+        // 更新播放按鈕
+        // =========================
+
         function updatePlayButton() {
 
             if (audio.paused) {
-                playBtn.innerText = '▶';
+
+                playBtn.classList.remove('is-playing');
+
                 playBtn.setAttribute('aria-label', '播放');
+                playBtn.setAttribute('title', '播放');
+
             } else {
-                playBtn.innerText = '⏸';
+
+                playBtn.classList.add('is-playing');
+
                 playBtn.setAttribute('aria-label', '暫停');
+                playBtn.setAttribute('title', '暫停');
+
             }
 
         }
 
 
+        // =========================
         // 載入素材
+        // =========================
+
         function loadSound(soundKey) {
 
             const data = soundData[soundKey];
 
             if (!data) return;
 
+            // 停止目前播放
             audio.pause();
 
-            // 更新標題與圖片
+            // 更新標題
             document.getElementById('title').innerText =
                 data.title[lang];
 
+            // 更新圖片
             document.getElementById('coverImg').src =
                 data.image;
 
             // 更新音訊
             audio.src = data.audio;
+
             audio.load();
 
             // 重設進度
             progressBar.value = 0;
+
             currentTimeEl.innerText = '0:00';
             durationEl.innerText = '0:00';
 
+            // 更新播放狀態
             updatePlayButton();
 
             currentSound = soundKey;
@@ -429,7 +613,10 @@
         }
 
 
+        // =========================
         // 時間格式
+        // =========================
+
         function formatTime(seconds) {
 
             if (!Number.isFinite(seconds)) {
@@ -437,6 +624,7 @@
             }
 
             const m = Math.floor(seconds / 60);
+
             const s = Math.floor(seconds % 60);
 
             return m + ':' + (s < 10 ? '0' : '') + s;
@@ -444,15 +632,22 @@
         }
 
 
+        // =========================
         // 播放 / 暫停
+        // =========================
+
         playBtn.addEventListener('click', async () => {
 
             if (audio.paused) {
 
                 try {
+
                     await audio.play();
+
                 } catch (error) {
+
                     console.error('播放失敗：', error);
+
                 }
 
             } else {
@@ -464,12 +659,18 @@
         });
 
 
-        // 循環播放
+        // =========================
+        // 單曲循環
+        // =========================
+
         loopBtn.addEventListener('click', () => {
 
             audio.loop = !audio.loop;
 
-            loopBtn.classList.toggle('active', audio.loop);
+            loopBtn.classList.toggle(
+                'active',
+                audio.loop
+            );
 
             loopBtn.setAttribute(
                 'aria-pressed',
@@ -479,7 +680,10 @@
         });
 
 
+        // =========================
         // 上一首
+        // =========================
+
         prevBtn.addEventListener('click', async () => {
 
             const wasPlaying = !audio.paused;
@@ -487,17 +691,26 @@
             loadSound(soundData[currentSound].prev);
 
             if (wasPlaying) {
+
                 try {
+
                     await audio.play();
+
                 } catch (error) {
+
                     console.error(error);
+
                 }
+
             }
 
         });
 
 
+        // =========================
         // 下一首
+        // =========================
+
         nextBtn.addEventListener('click', async () => {
 
             const wasPlaying = !audio.paused;
@@ -505,17 +718,26 @@
             loadSound(soundData[currentSound].next);
 
             if (wasPlaying) {
+
                 try {
+
                     await audio.play();
+
                 } catch (error) {
+
                     console.error(error);
+
                 }
+
             }
 
         });
 
 
-        // 播放時間更新
+        // =========================
+        // 播放進度更新
+        // =========================
+
         audio.addEventListener('timeupdate', () => {
 
             progressBar.value = audio.currentTime;
@@ -526,7 +748,10 @@
         });
 
 
+        // =========================
         // 音訊資訊載入完成
+        // =========================
+
         audio.addEventListener('loadedmetadata', () => {
 
             progressBar.max = audio.duration;
@@ -537,7 +762,10 @@
         });
 
 
-        // 拖曳播放進度
+        // =========================
+        // 拖曳進度條
+        // =========================
+
         progressBar.addEventListener('input', () => {
 
             audio.currentTime = Number(progressBar.value);
@@ -545,13 +773,21 @@
         });
 
 
+        // =========================
         // 播放狀態同步
+        // =========================
+
         audio.addEventListener('play', updatePlayButton);
+
         audio.addEventListener('pause', updatePlayButton);
+
         audio.addEventListener('ended', updatePlayButton);
 
 
+        // =========================
         // 音訊錯誤處理
+        // =========================
+
         audio.addEventListener('error', () => {
 
             document.getElementById('title').innerText =
@@ -562,7 +798,10 @@
         });
 
 
-        // 載入初始素材
+        // =========================
+        // 初始化
+        // =========================
+
         loadSound(
             soundData[currentSound] ? currentSound : 'drums'
         );
