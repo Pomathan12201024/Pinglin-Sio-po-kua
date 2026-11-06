@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -53,34 +52,26 @@
 
         .header {
             margin-bottom: 38px;
+            text-align: center;
         }
 
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
+            display: inline-block;
             color: var(--forest);
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.05rem;
+            font-weight: 700;
             text-decoration: none;
             transition: color 0.2s;
+            margin-bottom: 10px;
         }
 
         .back-link:hover {
             color: var(--tea);
         }
 
-        .back-link svg {
-            width: 19px;
-            height: 19px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
-
         .header-title {
             text-align: center;
-            margin-top: 42px;
+            margin-top: 25px;
         }
 
         .section-label {
@@ -329,7 +320,7 @@
             }
 
             .header-title {
-                margin-top: 35px;
+                margin-top: 20px;
             }
 
             .header-title h1 {
@@ -394,13 +385,7 @@
         <header class="header">
 
             <a href="index.html" class="back-link" data-i18n="back">
-
-                <svg viewBox="0 0 24 24">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-
-                回到主頁
-
+                ← 回到主頁
             </a>
 
 
@@ -638,7 +623,7 @@
     </main>
 
 
-    <!-- 圖片錯誤處理 -->
+    <!-- 圖片錯誤處理與翻譯邏輯 -->
 
     <script>
 
@@ -662,7 +647,7 @@
 
             zh: {
 
-                back: '回到主頁',
+                back: '← 回到主頁',
 
                 title: '認識聲音素材',
 
@@ -688,7 +673,7 @@
 
             en: {
 
-                back: 'Back to Home',
+                back: '← Back to Home',
 
                 title: 'Explore the Sounds',
 
