@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -38,8 +39,6 @@
             background: var(--cream);
             color: var(--text);
         }
-
-        /* 頁面主容器 */
 
         .page-container {
             width: 100%;
@@ -119,20 +118,14 @@
             background: #FFFFFF;
             border-radius: 20px;
             padding: 22px;
-            box-shadow:
-                0 5px 20px rgba(56, 92, 69, 0.07);
-
-            transition:
-                transform 0.25s,
-                box-shadow 0.25s;
-
+            box-shadow: 0 5px 20px rgba(56, 92, 69, 0.07);
+            transition: transform 0.25s, box-shadow 0.25s;
             animation: fadeIn 0.7s ease both;
         }
 
         .item-card:hover {
             transform: translateY(-3px);
-            box-shadow:
-                0 9px 25px rgba(56, 92, 69, 0.12);
+            box-shadow: 0 9px 25px rgba(56, 92, 69, 0.12);
         }
 
         /* 卡片圖片 */
@@ -228,23 +221,16 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-
             width: 100%;
             padding: 15px;
-
             background: var(--tea);
             color: #FFFFFF;
-
             border-radius: 11px;
             text-decoration: none;
-
             font-size: 1rem;
             font-weight: 600;
             letter-spacing: 1px;
-
-            transition:
-                background 0.2s,
-                transform 0.2s;
+            transition: background 0.2s, transform 0.2s;
         }
 
         .listen-btn:hover {
@@ -285,7 +271,6 @@
                 opacity: 0;
                 transform: translateY(12px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -300,6 +285,14 @@
             animation-delay: 0.2s;
         }
 
+        .item-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .item-card:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
         /* 鍵盤操作 */
 
         a:focus-visible {
@@ -310,7 +303,6 @@
         /* 手機版 */
 
         @media (max-width: 600px) {
-
             .page-container {
                 padding: 25px 18px 45px;
             }
@@ -373,375 +365,475 @@
                 scroll-behavior: auto !important;
             }
         }
-
     </style>
 </head>
 
 <body>
 
-    <main class="page-container">
+<main class="page-container">
 
-        <!-- 頁首 -->
-        <header class="header">
+    <!-- 頁首 -->
 
-            <a href="index.html" class="back-link" data-i18n="back">
-                ← 回到主頁
-            </a>
+    <header class="header">
+
+        <a href="index.html" class="back-link" data-i18n="back">
+            ← 回到主頁
+        </a>
+
+        <div class="header-title">
+
+            <div class="section-label">
+                DISCOVER THE MATERIALS
+            </div>
+
+            <h1 data-i18n="title">
+                認識聲音素材
+            </h1>
+
+            <p class="header-description" data-i18n="subtitle">
+                聆聽坪林的聲音，探索相褒歌的音樂元素。
+            </p>
+
+            <div class="title-line"></div>
+
+        </div>
+
+    </header>
 
 
-            <div class="header-title">
+    <!-- 素材卡片列表 -->
 
-                <div class="section-label">
-                    DISCOVER THE MATERIALS
+    <section class="item-list">
+
+
+        <!-- 素材 01：走路聲 -->
+
+        <article class="item-card">
+
+            <div class="image-wrapper">
+
+                <img
+                    src="images/photo_2_1.jpg"
+                    alt="走路聲素材"
+                    class="item-img"
+                    loading="lazy"
+                    onerror="showFallback(this)"
+                >
+
+                <div class="image-fallback">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 4a2 2 0 1 0-4 0 2 2 0 0 0 4 0z"/>
+                        <path d="M10 7l-2 5 3 2-1 7"/>
+                        <path d="M14 8l3 4-3 3 2 6"/>
+                    </svg>
+                    <span>Image unavailable</span>
                 </div>
-
-                <h1 data-i18n="title">
-                    認識聲音素材
-                </h1>
-
-                <p class="header-description"
-                   data-i18n="subtitle">
-                    聆聽坪林的聲音，探索相褒歌的音樂元素。
-                </p>
-
-                <div class="title-line"></div>
 
             </div>
 
-        </header>
+            <div class="item-heading">
 
+                <h2 class="item-title" data-i18n="item1Title">
+                    走路聲
+                </h2>
 
-        <!-- 素材卡片列表 -->
-        <section class="item-list">
+                <span class="item-number">
+                    01 / RHYTHM
+                </span>
 
+            </div>
 
-            <!-- 素材 01：相褒歌鼓組 -->
-
-            <article class="item-card">
-
-                <div class="image-wrapper">
-
-                    <img
-                        src="images/photo_2_1.jpg"
-                        alt="相褒歌鼓組聲音素材"
-                        class="item-img"
-                        loading="lazy"
-                        onerror="showFallback(this)"
-                    >
-
-                    <div class="image-fallback">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="7" width="18" height="14" rx="2"/>
-                            <circle cx="8" cy="12" r="1.5"/>
-                            <circle cx="16" cy="12" r="1.5"/>
-                            <path d="M7 4h10M12 2v2"/>
-                        </svg>
-                        <span>Image unavailable</span>
-                    </div>
-
-                </div>
-
-
-                <div class="item-heading">
-
-                    <h2 class="item-title"
-                        data-i18n="item1Title">
-                        相褒歌鼓組
-                    </h2>
-
-                    <span class="item-number">
-                        01 / RHYTHM
-                    </span>
-
-                </div>
-
-
-                <p class="item-desc"
-                   data-i18n="item1Desc">
-                    全部都是由採集音製作而成。
-                </p>
-
-
-                <a href="listen.html?sound=drums"
-                   class="listen-btn">
-
-                    <svg viewBox="0 0 24 24">
-                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
-                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
-                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
-                    </svg>
-
-                    <span data-i18n="btnListen">
-                        前往聆聽
-                    </span>
-
-                </a>
-
-            </article>
-
-
-            <!-- 素材 02：相褒歌主旋律 -->
-
-            <article class="item-card">
-
-                <div class="image-wrapper">
-
-                    <img
-                        src="images/photo_2_2.jpg"
-                        alt="相褒歌主旋律聲音素材"
-                        class="item-img"
-                        loading="lazy"
-                        onerror="showFallback(this)"
-                    >
-
-                    <div class="image-fallback">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M9 18V5l12-2v13"/>
-                            <circle cx="6" cy="18" r="3"/>
-                            <circle cx="18" cy="16" r="3"/>
-                        </svg>
-                        <span>Image unavailable</span>
-                    </div>
-
-                </div>
-
-
-                <div class="item-heading">
-
-                    <h2 class="item-title"
-                        data-i18n="item2Title">
-                        相褒歌主旋律
-                    </h2>
-
-                    <span class="item-number">
-                        02 / MELODY
-                    </span>
-
-                </div>
-
-
-                <p class="item-desc"
-                   data-i18n="item2Desc">
-                    簡易旋律素材。
-                </p>
-
-
-                <a href="listen.html?sound=lead"
-                   class="listen-btn">
-
-                    <svg viewBox="0 0 24 24">
-                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
-                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
-                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
-                    </svg>
-
-                    <span data-i18n="btnListen">
-                        前往聆聽
-                    </span>
-
-                </a>
-
-            </article>
-
-
-            <!-- 素材 03：坪林河流 -->
-
-            <article class="item-card">
-
-                <div class="image-wrapper">
-
-                    <img
-                        src="images/photo_2_3.jpg"
-                        alt="坪林河流自然環境"
-                        class="item-img"
-                        loading="lazy"
-                        onerror="showFallback(this)"
-                    >
-
-                    <div class="image-fallback">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M2 8c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
-                            <path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
-                            <path d="M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
-                        </svg>
-                        <span>Image unavailable</span>
-                    </div>
-
-                </div>
-
-
-                <div class="item-heading">
-
-                    <h2 class="item-title"
-                        data-i18n="item3Title">
-                        坪林河流
-                    </h2>
-
-                    <span class="item-number">
-                        03 / NATURE
-                    </span>
-
-                </div>
-
-
-                <p class="item-desc"
-                   data-i18n="item3Desc">
-                    收錄坪林河流的自然環境聲音。
-                </p>
-
-
-                <a href="listen.html?sound=pad"
-                   class="listen-btn">
-
-                    <svg viewBox="0 0 24 24">
-                        <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
-                        <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
-                        <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
-                    </svg>
-
-                    <span data-i18n="btnListen">
-                        前往聆聽
-                    </span>
-
-                </a>
-
-            </article>
-
-        </section>
-
-
-        <!-- 頁尾 -->
-
-        <footer class="footer">
-
-            <p data-i18n="footer">
-                一心二葉・坪心而唱｜探索坪林的聲音
+            <p class="item-desc" data-i18n="item1Desc">
+                採集行走時的腳步聲。踩踏石頭時呈現類似大鼓的低沉聲響，踩踏草堆時則帶有類似小鼓的輕快質感。
             </p>
 
-        </footer>
+            <a href="listen.html?sound=single1" class="listen-btn">
 
-    </main>
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                    <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                    <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                </svg>
+
+                <span data-i18n="btnListen">前往聆聽</span>
+
+            </a>
+
+        </article>
 
 
-    <!-- 圖片錯誤處理與翻譯邏輯 -->
+        <!-- 素材 02：蟲鳴鳥叫聲 -->
 
-    <script>
+        <article class="item-card">
 
-        function showFallback(img) {
+            <div class="image-wrapper">
 
-            img.style.display = 'none';
+                <img
+                    src="images/photo_2_2.jpg"
+                    alt="坪林山區蟲鳴鳥叫自然環境音"
+                    class="item-img"
+                    loading="lazy"
+                    onerror="showFallback(this)"
+                >
 
-            const fallback =
-                img.parentElement.querySelector('.image-fallback');
+                <div class="image-fallback">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2 12c4-5 8-5 12 0"/>
+                        <path d="M14 12l5-5 3 3-5 5"/>
+                        <path d="M5 18c3-2 6-2 9 0"/>
+                        <path d="M16 19h.01"/>
+                    </svg>
+                    <span>Image unavailable</span>
+                </div>
 
-            if (fallback) {
-                fallback.style.display = 'flex';
-            }
+            </div>
+
+            <div class="item-heading">
+
+                <h2 class="item-title" data-i18n="item2Title">
+                    蟲鳴鳥叫聲
+                </h2>
+
+                <span class="item-number">
+                    02 / NATURE
+                </span>
+
+            </div>
+
+            <p class="item-desc" data-i18n="item2Desc">
+                採集自坪林山區的自然環境音，包含蟲鳴與鳥叫，呈現山林環境的自然氛圍。
+            </p>
+
+            <a href="listen.html?sound=single2" class="listen-btn">
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                    <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                    <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                </svg>
+
+                <span data-i18n="btnListen">前往聆聽</span>
+
+            </a>
+
+        </article>
+
+
+        <!-- 素材 03：河流聲 -->
+
+        <article class="item-card">
+
+            <div class="image-wrapper">
+
+                <img
+                    src="images/photo_2_3.jpg"
+                    alt="坪林河流聲音素材"
+                    class="item-img"
+                    loading="lazy"
+                    onerror="showFallback(this)"
+                >
+
+                <div class="image-fallback">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2 8c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                        <path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                        <path d="M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/>
+                    </svg>
+                    <span>Image unavailable</span>
+                </div>
+
+            </div>
+
+            <div class="item-heading">
+
+                <h2 class="item-title" data-i18n="item3Title">
+                    河流聲
+                </h2>
+
+                <span class="item-number">
+                    03 / NATURE
+                </span>
+
+            </div>
+
+            <p class="item-desc" data-i18n="item3Desc">
+                採集自坪林河流的流水聲，經過聲音處理，進一步強化水流的質感與層次。
+            </p>
+
+            <a href="listen.html?sound=single3" class="listen-btn">
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                    <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                    <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                </svg>
+
+                <span data-i18n="btnListen">前往聆聽</span>
+
+            </a>
+
+        </article>
+
+
+        <!-- 素材 04：採茶葉聲 -->
+
+        <article class="item-card">
+
+            <div class="image-wrapper">
+
+                <img
+                    src="images/photo_2_4.jpg"
+                    alt="採摘茶葉聲音素材"
+                    class="item-img"
+                    loading="lazy"
+                    onerror="showFallback(this)"
+                >
+
+                <div class="image-fallback">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 4C10 4 4 8 4 15a5 5 0 0 0 5 5c7 0 11-7 11-16z"/>
+                        <path d="M4 20c3-5 7-8 12-11"/>
+                    </svg>
+                    <span>Image unavailable</span>
+                </div>
+
+            </div>
+
+            <div class="item-heading">
+
+                <h2 class="item-title" data-i18n="item4Title">
+                    採茶葉聲
+                </h2>
+
+                <span class="item-number">
+                    04 / TEXTURE
+                </span>
+
+            </div>
+
+            <p class="item-desc" data-i18n="item4Desc">
+                採集採摘茶葉時的聲音，經由聲音轉化，呈現類似鈸的清脆質感。
+            </p>
+
+            <a href="listen.html?sound=single4" class="listen-btn">
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                    <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                    <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                </svg>
+
+                <span data-i18n="btnListen">前往聆聽</span>
+
+            </a>
+
+        </article>
+
+
+        <!-- 素材 05：竹簍掃動茶葉聲 -->
+
+        <article class="item-card">
+
+            <div class="image-wrapper">
+
+                <img
+                    src="images/photo_2_5.jpg"
+                    alt="竹簍掃動茶葉聲音素材"
+                    class="item-img"
+                    loading="lazy"
+                    onerror="showFallback(this)"
+                >
+
+                <div class="image-fallback">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 8h16l-2 12H6L4 8z"/>
+                        <path d="M3 8l2-4h14l2 4"/>
+                        <path d="M8 12l1 5M12 12v5M16 12l-1 5"/>
+                    </svg>
+                    <span>Image unavailable</span>
+                </div>
+
+            </div>
+
+            <div class="item-heading">
+
+                <h2 class="item-title" data-i18n="item5Title">
+                    竹簍掃動茶葉聲
+                </h2>
+
+                <span class="item-number">
+                    05 / TEXTURE
+                </span>
+
+            </div>
+
+            <p class="item-desc" data-i18n="item5Desc">
+                模擬採茶過程中，竹簍移動並掃過茶葉時所產生的摩擦聲，呈現細緻的自然律動。
+            </p>
+
+            <a href="listen.html?sound=single5" class="listen-btn">
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 14v-3a9 9 0 0 1 18 0v3"/>
+                    <path d="M3 14a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2z"/>
+                    <path d="M21 14a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2z"/>
+                </svg>
+
+                <span data-i18n="btnListen">前往聆聽</span>
+
+            </a>
+
+        </article>
+
+    </section>
+
+
+    <!-- 頁尾 -->
+
+    <footer class="footer">
+
+        <p data-i18n="footer">
+            一心二葉・坪心而唱｜探索坪林的聲音
+        </p>
+
+    </footer>
+
+</main>
+
+
+<script>
+
+    function showFallback(img) {
+
+        img.style.display = 'none';
+
+        const fallback =
+            img.parentElement.querySelector('.image-fallback');
+
+        if (fallback) {
+            fallback.style.display = 'flex';
+        }
+
+    }
+
+
+    // 中英文翻譯
+
+    const dict = {
+
+        zh: {
+
+            back: '← 回到主頁',
+
+            title: '認識聲音素材',
+
+            subtitle: '聆聽坪林的聲音，探索相褒歌的音樂元素。',
+
+            item1Title: '走路聲',
+
+            item1Desc: '採集行走時的腳步聲。踩踏石頭時呈現類似大鼓的低沉聲響，踩踏草堆時則帶有類似小鼓的輕快質感。',
+
+            item2Title: '蟲鳴鳥叫聲',
+
+            item2Desc: '採集自坪林山區的自然環境音，包含蟲鳴與鳥叫，呈現山林環境的自然氛圍。',
+
+            item3Title: '河流聲',
+
+            item3Desc: '採集自坪林河流的流水聲，經過聲音處理，進一步強化水流的質感與層次。',
+
+            item4Title: '採茶葉聲',
+
+            item4Desc: '採集採摘茶葉時的聲音，經由聲音轉化，呈現類似鈸的清脆質感。',
+
+            item5Title: '竹簍掃動茶葉聲',
+
+            item5Desc: '模擬採茶過程中，竹簍移動並掃過茶葉時所產生的摩擦聲，呈現細緻的自然律動。',
+
+            btnListen: '前往聆聽',
+
+            footer: '一心二葉・坪心而唱｜探索坪林的聲音'
+
+        },
+
+        en: {
+
+            back: '← Back to Home',
+
+            title: 'Explore the Sounds',
+
+            subtitle: 'Listen to the sounds of Pinglin and discover the musical elements of Sio-Po-Kua.',
+
+            item1Title: 'Footsteps',
+
+            item1Desc: 'Footsteps recorded while walking. Stepping on stones produces deep, bass-drum-like sounds, while walking over grass creates lighter, snare-like textures.',
+
+            item2Title: 'Insects and Birds',
+
+            item2Desc: 'Natural field recordings from the mountains of Pinglin, featuring insects and birdsong that capture the atmosphere of the surrounding environment.',
+
+            item3Title: 'River Sounds',
+
+            item3Desc: 'A field recording of a river in Pinglin, processed to enhance the texture and depth of the flowing water.',
+
+            item4Title: 'Tea Leaf Picking',
+
+            item4Desc: 'Sounds recorded while picking tea leaves, transformed to create crisp, cymbal-like textures.',
+
+            item5Title: 'Bamboo Basket Brushing',
+
+            item5Desc: 'A recreation of the brushing and rustling sounds produced as a bamboo basket moves through tea leaves during harvesting, creating subtle, organic rhythms.',
+
+            btnListen: 'Listen',
+
+            footer: 'One Heart, Two Leaves · Discover the Sounds of Pinglin'
 
         }
 
-
-        // 中英文翻譯
-
-        const dict = {
-
-            zh: {
-
-                back: '← 回到主頁',
-
-                title: '認識聲音素材',
-
-                subtitle: '聆聽坪林的聲音，探索相褒歌的音樂元素。',
-
-                item1Title: '相褒歌鼓組',
-
-                item1Desc: '全部都是由採集音製作而成。',
-
-                item2Title: '相褒歌主旋律',
-
-                item2Desc: '簡易旋律素材。',
-
-                item3Title: '坪林河流',
-
-                item3Desc: '收錄坪林河流的自然環境聲音。',
-
-                btnListen: '前往聆聽',
-
-                footer: '一心二葉・坪心而唱｜探索坪林的聲音'
-
-            },
-
-            en: {
-
-                back: '← Back to Home',
-
-                title: 'Explore the Sounds',
-
-                subtitle: 'Listen to the sounds of Pinglin and discover the musical elements of Sio-Po-Kua.',
-
-                item1Title: 'Sio-Po-Kua Percussion',
-
-                item1Desc: 'Rhythmic elements created entirely from field recordings.',
-
-                item2Title: 'Sio-Po-Kua Melody',
-
-                item2Desc: 'A collection of simple melodic materials.',
-
-                item3Title: 'Pinglin River',
-
-                item3Desc: 'Natural environmental recordings of the Pinglin river.',
-
-                btnListen: 'Listen',
-
-                footer: 'One Heart, Two Leaves · Discover the Sounds of Pinglin'
-
-            }
-
-        };
+    };
 
 
-        function setLang(lang) {
+    function setLang(lang) {
 
-            document.documentElement.lang =
-                lang === 'zh' ? 'zh-TW' : 'en';
+        document.documentElement.lang =
+            lang === 'zh' ? 'zh-TW' : 'en';
 
-            document.querySelectorAll('[data-i18n]')
-                .forEach(el => {
+        document.querySelectorAll('[data-i18n]')
+            .forEach(el => {
 
-                    const key = el.getAttribute('data-i18n');
+                const key = el.getAttribute('data-i18n');
 
-                    if (dict[lang] && dict[lang][key]) {
-                        el.textContent = dict[lang][key];
-                    }
+                if (dict[lang] && dict[lang][key]) {
+                    el.textContent = dict[lang][key];
+                }
 
-                });
-
-            try {
-                localStorage.setItem('prefLang', lang);
-            } catch (e) {
-                // 無法儲存時仍正常顯示目前語言
-            }
-
-        }
-
-
-        // 讀取首頁儲存的語言設定
-
-        let savedLang = 'zh';
+            });
 
         try {
-            savedLang = localStorage.getItem('prefLang') || 'zh';
+            localStorage.setItem('prefLang', lang);
         } catch (e) {
-            savedLang = 'zh';
+            // 無法儲存時仍正常顯示目前語言
         }
 
-        if (!dict[savedLang]) {
-            savedLang = 'zh';
-        }
+    }
 
-        setLang(savedLang);
 
-    </script>
+    // 讀取首頁儲存的語言設定
+
+    let savedLang = 'zh';
+
+    try {
+        savedLang = localStorage.getItem('prefLang') || 'zh';
+    } catch (e) {
+        savedLang = 'zh';
+    }
+
+    if (!dict[savedLang]) {
+        savedLang = 'zh';
+    }
+
+    setLang(savedLang);
+
+</script>
 
 </body>
 </html>
