@@ -387,8 +387,30 @@
             overflow-y: auto;
             overscroll-behavior: contain;
             touch-action: pan-y;
+
+            /* Firefox */
             scrollbar-width: thin;
-            scrollbar-color: var(--tea) transparent;
+            scrollbar-color: #FFFFFF rgba(255, 255, 255, 0.25);
+        }
+
+        /* Chromium、Chrome、Edge 與部分 Android 瀏覽器的捲動條 */
+        .drop-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .drop-area::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+        }
+
+        .drop-area::-webkit-scrollbar-thumb {
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid rgba(56, 92, 69, 0.15);
+        }
+
+        .drop-area::-webkit-scrollbar-thumb:hover {
+            background: #FFFFFF;
         }
 
         .drop-area.drag-over {
@@ -761,10 +783,6 @@
                 grid-column: 1 / -1;
                 grid-row: 3;
                 padding: 7px 10px;
-            }
-
-            .collage-heading {
-                margin-bottom: 5px;
             }
 
             .drop-area {
@@ -1445,6 +1463,12 @@
        點擊：顯示介紹並播放／暫停
        水平滑動：翻轉原始／加工版
        長按後移動：拖曳至拼貼區
+
+       修正：
+       1. 只有指標仍按住時才處理 pointermove。
+       2. 放開後立即結束手勢，避免放開後的微小移動誤觸翻面。
+       3. 無論拖曳到拼貼區內或外，都會清除暫時圖片。
+       4. pointercancel 或失去指標捕捉時，也會清理拖曳狀態。
     ================================================= */
 
     const LONG_PRESS_TIME = 380;
@@ -1460,9 +1484,32 @@
         let longPressed = false;
         let swiped = false;
         let dragging = false;
-
-        let ghost = null;
         let moved = false;
+
+        let pointerActive = false;
+        let activePointerId = null;
+        let ghost = null;
+
+        function clearDragState() {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+
+            card.classList.remove("dragging");
+            dropArea.classList.remove("drag-over");
+
+            if (ghost) {
+                ghost.remove();
+                ghost = null;
+            }
+
+            dragging = false;
+        }
+
+        function endPointer() {
+            pointerActive = false;
+            activePointerId = null;
+            clearDragState();
+        }
 
         card.addEventListener("contextmenu", event => {
             event.preventDefault();
@@ -1473,7 +1520,15 @@
                 return;
             }
 
+            /* 避免同一張卡片重複開始手勢 */
+            if (pointerActive) {
+                return;
+            }
+
             event.preventDefault();
+
+            pointerActive = true;
+            activePointerId = event.pointerId;
 
             pointerStartX = event.clientX;
             pointerStartY = event.clientY;
@@ -1484,14 +1539,25 @@
             dragging = false;
             moved = false;
 
-            card.setPointerCapture(event.pointerId);
+            try {
+                card.setPointerCapture(event.pointerId);
+            } catch (error) {
+                /* 若瀏覽器不支援捕捉，仍可使用基本點擊操作 */
+            }
 
             longPressTimer = setTimeout(() => {
-                longPressed = true;
+                if (pointerActive && activePointerId === event.pointerId) {
+                    longPressed = true;
+                }
             }, LONG_PRESS_TIME);
         });
 
         card.addEventListener("pointermove", event => {
+            /* 放開後的 pointermove 一律忽略 */
+            if (!pointerActive || event.pointerId !== activePointerId) {
+                return;
+            }
+
             const dx = event.clientX - pointerStartX;
             const dy = event.clientY - pointerStartY;
 
@@ -1502,8 +1568,7 @@
                 moved = true;
             }
 
-            /* 長按後才允許拖曳 */
-
+            /* 長按後移動才進入拖曳模式 */
             if (longPressed && moved) {
                 if (!dragging) {
                     dragging = true;
@@ -1532,8 +1597,7 @@
                 return;
             }
 
-            /* 未達長按時間的水平滑動：翻轉 */
-
+            /* 按住期間的水平滑動才會翻轉 */
             if (
                 !longPressed &&
                 !swiped &&
@@ -1542,12 +1606,26 @@
             ) {
                 swiped = true;
                 clearTimeout(longPressTimer);
+                longPressTimer = null;
                 flipCard(card);
             }
         });
 
         card.addEventListener("pointerup", event => {
+            if (!pointerActive || event.pointerId !== activePointerId) {
+                return;
+            }
+
+            const elapsed = Date.now() - pointerStartTime;
+            const dx = event.clientX - pointerStartX;
+            const dy = event.clientY - pointerStartY;
+
+            /* 先結束手勢，確保後續移動不會再觸發翻面 */
+            pointerActive = false;
+            activePointerId = null;
+
             clearTimeout(longPressTimer);
+            longPressTimer = null;
 
             if (dragging) {
                 const rect = dropArea.getBoundingClientRect();
@@ -1562,21 +1640,22 @@
                     addToCollage(item, card.dataset.version);
                 }
 
-                card.classList.remove("dragging");
-                dropArea.classList.remove("drag-over");
-
-                if (ghost) ghost.remove();
-
-                ghost = null;
-                dragging = false;
+                /* 不論放開位置，都清除拖曳狀態與暫時圖片 */
+                clearDragState();
                 return;
             }
 
-            /* 短時間點擊：顯示介紹並播放／暫停 */
+            clearDragState();
 
-            const elapsed = Date.now() - pointerStartTime;
-
-            if (!longPressed && !swiped && !moved && elapsed < LONG_PRESS_TIME) {
+            /* 短按：顯示介紹並播放／暫停 */
+            if (
+                !longPressed &&
+                !swiped &&
+                !moved &&
+                elapsed < LONG_PRESS_TIME &&
+                Math.abs(dx) < SWIPE_DISTANCE &&
+                Math.abs(dy) < MOVE_CANCEL_DISTANCE
+            ) {
                 const version = card.dataset.version;
 
                 updateMainDisplay(item, version);
@@ -1584,16 +1663,20 @@
             }
         });
 
-        card.addEventListener("pointercancel", () => {
-            clearTimeout(longPressTimer);
+        card.addEventListener("pointercancel", event => {
+            if (event.pointerId !== activePointerId) {
+                return;
+            }
 
-            card.classList.remove("dragging");
-            dropArea.classList.remove("drag-over");
+            endPointer();
+        });
 
-            if (ghost) ghost.remove();
+        card.addEventListener("lostpointercapture", event => {
+            if (event.pointerId !== activePointerId) {
+                return;
+            }
 
-            ghost = null;
-            dragging = false;
+            endPointer();
         });
     }
 
