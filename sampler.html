@@ -597,6 +597,7 @@
             background: var(--forest);
             color: white;
         }
+
         .tour-skip {
             background: var(--paper);
             color: var(--forest);
@@ -625,7 +626,10 @@
             .app {
                 padding: 7px 12px;
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-                grid-template-rows: auto minmax(0, 1fr) minmax(0, 0.75fr);
+                grid-template-rows:
+                    auto
+                    minmax(0, 1fr)
+                    minmax(0, 0.9fr);
                 gap: 7px 10px;
             }
 
@@ -634,60 +638,131 @@
                 min-height: 28px;
             }
 
+            /* 左側主素材區 */
             .main-panel {
                 grid-column: 1;
                 grid-row: 2;
-                grid-template-columns: minmax(0, 1fr);
-                grid-template-rows: minmax(0, 1fr) auto;
-                gap: 5px;
+
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                grid-template-rows: minmax(0, 1fr);
+
+                gap: 8px;
+                padding: 8px;
             }
 
+            .main-image-wrap {
+                min-height: 0;
+                min-width: 0;
+            }
+
+            /* 右側介紹文字與播放控制 */
             .main-info {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                align-items: center;
-                column-gap: 8px;
+                min-width: 0;
+                min-height: 0;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: stretch;
+
+                overflow: hidden;
             }
 
             .main-info h2 {
-                font-size: 0.95rem;
-                margin: 0;
+                font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+                margin: 0 0 5px;
             }
 
-            .main-info p,
+            .main-info p {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 4;
+
+                overflow: hidden;
+                font-size: clamp(0.68rem, 1.7vw, 0.82rem);
+                line-height: 1.45;
+            }
+
             .version-label {
+                display: inline-block;
+                align-self: flex-start;
+                margin-top: 5px;
+                font-size: 0.65rem;
+            }
+
+            .version-label[hidden] {
                 display: none;
             }
 
             .main-play {
-                grid-column: 2;
-                grid-row: 1;
-                width: 90px;
-                margin: 0;
+                width: 100%;
                 min-height: 30px;
+                margin-top: 7px;
+                font-size: 0.75rem;
             }
 
+            /* 右側素材格子 */
             .materials-panel {
                 grid-column: 2;
                 grid-row: 2;
+
                 grid-template-columns: repeat(3, minmax(0, 1fr));
                 grid-template-rows: repeat(2, minmax(0, 1fr));
-            }
 
-            .collage-panel {
-                grid-column: 1 / -1;
-                grid-row: 3;
+                gap: 7px;
             }
 
             .card-face img {
-                height: 70%;
+                height: 68%;
+            }
+
+            .card-name {
+                font-size: clamp(0.62rem, 1.8vw, 0.78rem);
+            }
+
+            /* 下方拼貼區 */
+            .collage-panel {
+                grid-column: 1 / -1;
+                grid-row: 3;
+
+                padding: 7px 10px;
+            }
+
+            .collage-heading {
+                margin-bottom: 5px;
+            }
+
+            .drop-area {
+                min-height: 0;
+                flex: 1;
+                padding: 5px;
+            }
+
+            .collage-item {
+                min-width: 0;
+                flex: 1;
+            }
+
+            .collage-actions {
+                margin-top: 5px;
+            }
+
+            .collage-actions button {
+                min-height: 32px;
             }
         }
+
+        /* 較矮的橫向手機 */
 
         @media (max-height: 420px) and (orientation: landscape) {
             .app {
                 padding: 4px 9px;
-                gap: 5px;
+                grid-template-rows:
+                    auto
+                    minmax(0, 1fr)
+                    minmax(0, 0.9fr);
+                gap: 5px 8px;
             }
 
             .header {
@@ -700,6 +775,33 @@
 
             .main-panel {
                 padding: 6px;
+                gap: 6px;
+            }
+
+            .main-info h2 {
+                font-size: 0.85rem;
+            }
+
+            .main-info p {
+                -webkit-line-clamp: 3;
+                font-size: 0.65rem;
+                line-height: 1.35;
+            }
+
+            .version-label {
+                margin-top: 3px;
+                padding: 2px 7px;
+                font-size: 0.6rem;
+            }
+
+            .main-play {
+                min-height: 27px;
+                margin-top: 5px;
+                font-size: 0.7rem;
+            }
+
+            .materials-panel {
+                gap: 5px;
             }
 
             .collage-panel {
@@ -710,8 +812,16 @@
                 margin-bottom: 3px;
             }
 
+            .drop-area {
+                padding: 4px;
+            }
+
             .collage-actions {
                 margin-top: 3px;
+            }
+
+            .collage-actions button {
+                min-height: 29px;
             }
         }
 
