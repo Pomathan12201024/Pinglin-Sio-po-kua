@@ -45,9 +45,7 @@
             font: inherit;
         }
 
-        /* =========================
-           整體版面
-        ========================= */
+        /* 整體版面 */
 
         .app {
             width: 100%;
@@ -60,9 +58,7 @@
             overflow: hidden;
         }
 
-        /* =========================
-           頁首
-        ========================= */
+        /* 頁首 */
 
         .header {
             min-height: 35px;
@@ -88,14 +84,20 @@
             text-align: center;
         }
 
-        .header-space {
-            width: 65px;
+        .help-btn {
+            width: 30px;
+            height: 30px;
             flex-shrink: 0;
+            border: 1.5px solid var(--tea);
+            border-radius: 50%;
+            background: var(--white);
+            color: var(--forest);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* =========================
-           主畫面
-        ========================= */
+        /* 主畫面 */
 
         .main-panel {
             min-height: 0;
@@ -110,6 +112,7 @@
         }
 
         .main-image-wrap {
+            position: relative;
             min-width: 0;
             min-height: 0;
             overflow: hidden;
@@ -120,8 +123,28 @@
         .main-image {
             width: 100%;
             height: 100%;
-            display: block;
+            display: none;
             object-fit: cover;
+        }
+
+        .main-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.7;
+            font-size: 0.85rem;
+        }
+
+        .placeholder-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            opacity: 0.65;
         }
 
         .main-info {
@@ -176,9 +199,12 @@
             background: var(--earth);
         }
 
-        /* =========================
-           素材格子
-        ========================= */
+        .main-play:disabled {
+            background: #c5c8bd;
+            cursor: not-allowed;
+        }
+
+        /* 素材格子 */
 
         .materials-panel {
             min-height: 0;
@@ -299,9 +325,7 @@
             pointer-events: none;
         }
 
-        /* =========================
-           拼貼區
-        ========================= */
+        /* 拼貼區 */
 
         .collage-panel {
             min-height: 0;
@@ -420,9 +444,7 @@
             cursor: not-allowed;
         }
 
-        /* =========================
-           拖曳提示
-        ========================= */
+        /* 拖曳提示 */
 
         .drag-ghost {
             position: fixed;
@@ -437,9 +459,103 @@
             transform: translate(-50%, -50%);
         }
 
-        /* =========================
-           直向手機微調
-        ========================= */
+        /* 操作說明彈窗 */
+
+        .help-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.58);
+        }
+
+        .help-overlay.hidden {
+            display: none;
+        }
+
+        .help-box {
+            width: 100%;
+            max-width: 430px;
+            max-height: 85%;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 24px 22px;
+            border-radius: 20px;
+            background: #FFFFFF;
+            color: var(--text);
+            text-align: left;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            touch-action: pan-y;
+        }
+
+        .help-box h2 {
+            margin: 0 0 7px;
+            color: var(--forest);
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .help-subtitle {
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .help-step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin: 14px 0;
+        }
+
+        .help-number {
+            width: 27px;
+            height: 27px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--paper);
+            color: var(--forest);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .help-step strong {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--forest);
+            font-size: 0.9rem;
+        }
+
+        .help-step p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.55;
+        }
+
+        .help-close {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            background: var(--forest);
+            color: white;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        /* 直向手機 */
 
         @media (orientation: portrait) {
             .app {
@@ -447,9 +563,7 @@
             }
         }
 
-        /* =========================
-           橫向手機：左右分區
-        ========================= */
+        /* 橫向手機 */
 
         @media (orientation: landscape) {
             .app {
@@ -470,10 +584,6 @@
                 grid-template-columns: minmax(0, 1fr);
                 grid-template-rows: minmax(0, 1fr) auto;
                 gap: 5px;
-            }
-
-            .main-image-wrap {
-                min-height: 0;
             }
 
             .main-info {
@@ -574,33 +684,41 @@
     <header class="header">
         <a href="index.html">← 回到主頁</a>
         <h1>一心二葉・坪心而唱</h1>
-        <div class="header-space"></div>
+        <button class="help-btn" id="helpBtn" aria-label="操作說明">?</button>
     </header>
 
-    <!-- 主畫面：圖片、介紹、單獨播放 -->
+    <!-- 主畫面 -->
     <section class="main-panel">
 
         <div class="main-image-wrap">
+
             <img
                 id="mainImage"
                 class="main-image"
-                src="images/photo_2_1.jpg"
                 alt="聲音素材圖片"
             >
+
+            <!-- 尚未選擇素材時的預設畫面 -->
+            <div class="main-placeholder" id="mainPlaceholder">
+                <div class="placeholder-icon">♧</div>
+                <div>請點選下方素材</div>
+                <div>查看圖片與聲音介紹</div>
+            </div>
+
         </div>
 
         <div class="main-info">
-            <h2 id="mainTitle">走路聲</h2>
+            <h2 id="mainTitle">尚未選擇素材</h2>
 
             <p id="mainDescription">
-                選擇下方素材，查看圖片與聲音介紹。
+                選擇下方任一素材，即可在這裡查看相關介紹。
             </p>
 
-            <span class="version-label" id="versionLabel">
+            <span class="version-label" id="versionLabel" hidden>
                 原始聲音
             </span>
 
-            <button class="main-play" id="mainPlayBtn">
+            <button class="main-play" id="mainPlayBtn" disabled>
                 ▶ 播放素材
             </button>
         </div>
@@ -639,15 +757,69 @@
 </div>
 
 
+<!-- 操作說明彈窗 -->
+<div class="help-overlay" id="helpOverlay">
+
+    <div class="help-box" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+
+        <h2 id="helpTitle">聲音拼貼操作說明</h2>
+
+        <p class="help-subtitle">
+            選擇喜歡的聲音素材，試著組合出自己的聲音風景。
+        </p>
+
+        <div class="help-step">
+            <div class="help-number">1</div>
+            <div>
+                <strong>點擊素材</strong>
+                <p>點擊下方素材，即可查看圖片與介紹，並播放或暫停原始／加工聲音。</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="help-number">2</div>
+            <div>
+                <strong>切換聲音版本</strong>
+                <p>在素材格子上左右滑動，即可切換原始聲音與加工版本。再次滑動即可切回。</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="help-number">3</div>
+            <div>
+                <strong>加入聲音拼貼</strong>
+                <p>長按素材，接著拖曳至下方拼貼區。加入的是當下選取的聲音版本。</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="help-number">4</div>
+            <div>
+                <strong>完成拼貼</strong>
+                <p>放入素材後，按下「確認拼貼」即可播放組合後的聲音。按下「清空」可以重新選擇。</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="help-number">5</div>
+            <div>
+                <strong>重新聆聽素材</strong>
+                <p>素材加入拼貼後仍會留在原本的位置，可以隨時再次點擊聆聽。</p>
+            </div>
+        </div>
+
+        <button class="help-close" id="helpCloseBtn">
+            開始體驗
+        </button>
+
+    </div>
+
+</div>
+
+
 <script>
     /* =================================================
        素材資料設定
-
-       原始聲音：
-       audio/single_1.mp3 ～ single_5.mp3
-
-       以下加工版與拼貼版路徑先作為預留範例。
-       之後取得正式檔案時，只需修改這裡。
     ================================================= */
 
     const materials = [
@@ -708,8 +880,9 @@
        狀態
     ================================================= */
 
-    let currentMaterial = materials[0];
-    let currentVersion = "original";
+    // 初始不選取任何素材
+    let currentMaterial = null;
+    let currentVersion = null;
 
     let previewAudio = new Audio();
     previewAudio.loop = true;
@@ -722,6 +895,7 @@
     const dropArea = document.getElementById("dropArea");
 
     const mainImage = document.getElementById("mainImage");
+    const mainPlaceholder = document.getElementById("mainPlaceholder");
     const mainTitle = document.getElementById("mainTitle");
     const mainDescription = document.getElementById("mainDescription");
     const versionLabel = document.getElementById("versionLabel");
@@ -729,6 +903,26 @@
 
     const confirmBtn = document.getElementById("confirmBtn");
     const clearBtn = document.getElementById("clearBtn");
+
+
+    /* =================================================
+       操作說明彈窗
+    ================================================= */
+
+    const helpOverlay = document.getElementById("helpOverlay");
+    const helpBtn = document.getElementById("helpBtn");
+    const helpCloseBtn = document.getElementById("helpCloseBtn");
+
+    function openHelp() {
+        helpOverlay.classList.remove("hidden");
+    }
+
+    function closeHelp() {
+        helpOverlay.classList.add("hidden");
+    }
+
+    helpBtn.addEventListener("click", openHelp);
+    helpCloseBtn.addEventListener("click", closeHelp);
 
 
     /* =================================================
@@ -742,6 +936,7 @@
             const card = document.createElement("div");
             card.className = "material-card";
             card.dataset.id = item.id;
+            card.dataset.version = "original";
 
             card.innerHTML = `
                 <div class="card-inner">
@@ -778,32 +973,26 @@
 
         mainImage.src = item.image;
         mainImage.alt = item.title;
+        mainImage.style.display = "block";
+
+        mainPlaceholder.style.display = "none";
 
         mainTitle.textContent = item.title;
         mainDescription.textContent = item.description;
 
+        versionLabel.hidden = false;
         versionLabel.textContent =
             version === "original" ? "原始聲音" : "加工後的聲音";
 
-        document.querySelectorAll(".material-card").forEach(card => {
-            card.classList.toggle(
-                "flipped",
-                card.dataset.version === "processed"
-            );
-
-            const mark = card.querySelector(".flip-mark");
-            if (mark) {
-                mark.textContent =
-                    card.classList.contains("flipped") ? "加工版" : "原始";
-            }
-        });
+        mainPlayBtn.disabled = false;
 
         updatePreviewButton();
     }
 
 
     /* =================================================
-       單獨素材播放：同一時間只播放一個
+       單獨素材播放
+       同一時間只播放一個
     ================================================= */
 
     function getPreviewUrl(item, version) {
@@ -814,14 +1003,22 @@
 
     function updatePreviewButton() {
         const isThisPlaying =
+            currentMaterial &&
             !previewAudio.paused &&
             previewAudio.dataset.material === currentMaterial.id &&
             previewAudio.dataset.version === currentVersion;
 
-        mainPlayBtn.textContent =
-            isThisPlaying ? "Ⅱ 暫停素材" : "▶ 播放素材";
+        if (!currentMaterial) {
+            mainPlayBtn.textContent = "▶ 播放素材";
+            mainPlayBtn.classList.remove("playing");
+            mainPlayBtn.disabled = true;
+        } else {
+            mainPlayBtn.textContent =
+                isThisPlaying ? "Ⅱ 暫停素材" : "▶ 播放素材";
 
-        mainPlayBtn.classList.toggle("playing", isThisPlaying);
+            mainPlayBtn.classList.toggle("playing", isThisPlaying);
+            mainPlayBtn.disabled = false;
+        }
 
         document.querySelectorAll(".material-card").forEach(card => {
             const isPlaying =
@@ -830,8 +1027,9 @@
                 previewAudio.dataset.version === card.dataset.version;
 
             card.classList.toggle("is-playing", isPlaying);
-            card.querySelector(".card-play").textContent =
-                isPlaying ? "Ⅱ" : "▶";
+
+            const playIcon = card.querySelector(".card-play");
+            playIcon.textContent = isPlaying ? "Ⅱ" : "▶";
         });
     }
 
@@ -866,6 +1064,7 @@
     }
 
     mainPlayBtn.addEventListener("click", () => {
+        if (!currentMaterial) return;
         togglePreview(currentMaterial, currentVersion);
     });
 
@@ -899,8 +1098,6 @@
         let ghost = null;
         let moved = false;
 
-        card.dataset.version = "original";
-
         card.addEventListener("contextmenu", event => {
             event.preventDefault();
         });
@@ -932,8 +1129,10 @@
             const dx = event.clientX - pointerStartX;
             const dy = event.clientY - pointerStartY;
 
-            if (Math.abs(dx) > MOVE_CANCEL_DISTANCE ||
-                Math.abs(dy) > MOVE_CANCEL_DISTANCE) {
+            if (
+                Math.abs(dx) > MOVE_CANCEL_DISTANCE ||
+                Math.abs(dy) > MOVE_CANCEL_DISTANCE
+            ) {
                 moved = true;
             }
 
@@ -955,6 +1154,7 @@
                 }
 
                 const rect = dropArea.getBoundingClientRect();
+
                 const overDropArea =
                     event.clientX >= rect.left &&
                     event.clientX <= rect.right &&
@@ -1047,8 +1247,14 @@
             material => material.id === card.dataset.id
         );
 
-        if (item && currentMaterial.id === item.id) {
+        // 若目前主畫面顯示的正是這個素材，同步更新版本
+        if (item && currentMaterial && currentMaterial.id === item.id) {
             updateMainDisplay(item, version);
+
+            // 切換版本時停止舊版本，避免播放狀態與畫面不一致
+            previewAudio.pause();
+            previewAudio.currentTime = 0;
+            updatePreviewButton();
         }
     }
 
@@ -1056,6 +1262,7 @@
     /* =================================================
        加入拼貼區
        同一素材只能加入一次
+       素材格子本身不會被移除
     ================================================= */
 
     function addToCollage(item, version) {
@@ -1226,8 +1433,11 @@
     ================================================= */
 
     renderMaterials();
-    updateMainDisplay(materials[0], "original");
     renderCollage();
+    updatePreviewButton();
+
+    // 每次進入頁面時，自動顯示操作說明
+    openHelp();
 
 </script>
 
