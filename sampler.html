@@ -597,6 +597,10 @@
             background: var(--forest);
             color: white;
         }
+        .tour-skip {
+            background: var(--paper);
+            color: var(--forest);
+        }
 
         .tour-prev:disabled {
             opacity: 0.35;
@@ -833,8 +837,9 @@
         <p id="tourDescription"></p>
 
         <div class="tour-controls">
-            <button class="tour-prev" id="tourPrev">上一步</button>
-            <button class="tour-next" id="tourNext">下一步 →</button>
+          <button class="tour-prev" id="tourPrev">上一步</button>
+          <button class="tour-skip" id="tourSkip" hidden>略過</button>
+          <button class="tour-next" id="tourNext">下一步 →</button>
         </div>
 
     </div>
@@ -984,11 +989,14 @@
     const tourNext = document.getElementById("tourNext");
 
 
-    function openTour() {
-        currentTourStep = 0;
-        tourOverlay.classList.add("active");
+    function openTour(showSkip = false) {
+      currentTourStep = 0;
 
-        requestAnimationFrame(showTourStep);
+    document.getElementById("tourSkip").hidden = !showSkip;
+
+    tourOverlay.classList.add("active");
+
+    requestAnimationFrame(showTourStep);
     }
 
     function closeTour() {
@@ -1113,7 +1121,11 @@
         }
     });
 
-    document.getElementById("helpBtn").addEventListener("click", openTour);
+    document.getElementById("helpBtn").addEventListener("click", () => {
+      openTour(true);
+    });
+
+    document.getElementById("tourSkip").addEventListener("click", closeTour);
 
     window.addEventListener("resize", () => {
         if (tourOverlay.classList.contains("active")) {
