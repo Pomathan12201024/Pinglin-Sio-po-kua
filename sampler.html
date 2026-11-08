@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -1102,11 +1103,11 @@
     function openTour(showSkip = false) {
       currentTourStep = 0;
 
-    document.getElementById("tourSkip").hidden = !showSkip;
+      document.getElementById("tourSkip").hidden = !showSkip;
 
-    tourOverlay.classList.add("active");
+      tourOverlay.classList.add("active");
 
-    requestAnimationFrame(showTourStep);
+      requestAnimationFrame(showTourStep);
     }
 
     function closeTour() {
@@ -1232,7 +1233,7 @@
     });
 
     document.getElementById("helpBtn").addEventListener("click", () => {
-      openTour(true);
+        openTour(true);
     });
 
     document.getElementById("tourSkip").addEventListener("click", closeTour);
@@ -1581,12 +1582,16 @@
 
     /* =================================================
        加入拼貼區
-       同一素材只能加入一次
+       同一素材的不同版本可以同時加入
+       相同素材、相同版本只能加入一次
        素材格子本身不會被移除
     ================================================= */
 
     function addToCollage(item, version) {
-        if (collageItems.some(selected => selected.id === item.id)) {
+        if (collageItems.some(
+            selected => selected.id === item.id &&
+                        selected.version === version
+        )) {
             return;
         }
 
@@ -1642,7 +1647,7 @@
             `;
 
             div.querySelector(".remove-item").addEventListener("click", () => {
-                removeFromCollage(item.id);
+                removeFromCollage(item.id, item.version);
             });
 
             dropArea.appendChild(div);
@@ -1654,15 +1659,27 @@
         confirmBtn.disabled = collageItems.length === 0;
     }
 
-    function removeFromCollage(id) {
-        collageItems = collageItems.filter(item => item.id !== id);
+
+    /* =================================================
+       移除拼貼素材
+       只移除指定素材的指定版本
+    ================================================= */
+
+    function removeFromCollage(id, version) {
+        collageItems = collageItems.filter(
+            item => !(item.id === id && item.version === version)
+        );
 
         const card = document.querySelector(
             `.material-card[data-id="${id}"]`
         );
 
         if (card) {
-            card.classList.remove("selected");
+            const stillSelected = collageItems.some(
+                item => item.id === id
+            );
+
+            card.classList.toggle("selected", stillSelected);
         }
 
         renderCollage();
