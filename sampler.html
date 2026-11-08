@@ -53,19 +53,23 @@
             height: 100dvh;
             padding: 10px 16px;
             display: grid;
-            grid-template-rows: auto minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 0.75fr);
+            grid-template-rows:
+                auto
+                minmax(0, 1.05fr)
+                minmax(0, 0.95fr)
+                minmax(0, 0.75fr);
             gap: 9px;
             overflow: hidden;
         }
 
-        /* 頁首 */
+        /* 頁首：三等分，標題固定置中 */
 
         .header {
             min-height: 35px;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             align-items: center;
-            justify-content: space-between;
-            gap: 10px;
+            gap: 4px;
         }
 
         .header a {
@@ -74,6 +78,7 @@
             font-size: 0.9rem;
             font-weight: bold;
             white-space: nowrap;
+            justify-self: start;
         }
 
         .header h1 {
@@ -82,12 +87,14 @@
             font-size: 1.05rem;
             letter-spacing: 1px;
             text-align: center;
+            white-space: nowrap;
+            justify-self: center;
         }
 
         .help-btn {
             width: 30px;
             height: 30px;
-            flex-shrink: 0;
+            justify-self: center;
             border: 1.5px solid var(--tea);
             border-radius: 50%;
             background: var(--white);
@@ -397,6 +404,22 @@
             object-fit: cover;
         }
 
+        /* 拼貼素材版本標籤 */
+
+        .collage-version {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            padding: 4px 7px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.92);
+            color: var(--forest);
+            font-size: 0.65rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 2;
+        }
+
         .remove-item {
             position: absolute;
             top: 2px;
@@ -409,6 +432,7 @@
             color: white;
             font-size: 0.8rem;
             line-height: 1;
+            z-index: 3;
         }
 
         .collage-actions {
@@ -444,6 +468,10 @@
             cursor: not-allowed;
         }
 
+        .confirm-btn.playing {
+            background: var(--earth);
+        }
+
         /* 拖曳提示 */
 
         .drag-ghost {
@@ -459,107 +487,131 @@
             transform: translate(-50%, -50%);
         }
 
-        /* 操作說明彈窗 */
+        /* =========================================
+           逐步操作導覽
+        ========================================= */
 
-        .help-overlay {
+        .tour-overlay {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.58);
-        }
-
-        .help-overlay.hidden {
+            pointer-events: none;
             display: none;
         }
 
-        .help-box {
-            width: 100%;
-            max-width: 430px;
-            max-height: 85%;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding: 24px 22px;
-            border-radius: 20px;
-            background: #FFFFFF;
-            color: var(--text);
-            text-align: left;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-            touch-action: pan-y;
-        }
-
-        .help-box h2 {
-            margin: 0 0 7px;
-            color: var(--forest);
-            font-size: 1.25rem;
-            text-align: center;
-        }
-
-        .help-subtitle {
-            margin: 0 0 20px;
-            color: var(--muted);
-            font-size: 0.82rem;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        .help-step {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            margin: 14px 0;
-        }
-
-        .help-number {
-            width: 27px;
-            height: 27px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--paper);
-            color: var(--forest);
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .help-step strong {
+        .tour-overlay.active {
             display: block;
-            margin-bottom: 3px;
-            color: var(--forest);
-            font-size: 0.9rem;
         }
 
-        .help-step p {
+        .tour-shade {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.62);
+            pointer-events: auto;
+        }
+
+        .tour-bubble {
+            position: absolute;
+            z-index: 10002;
+            width: min(270px, calc(100vw - 36px));
+            padding: 13px 14px;
+            border-radius: 15px;
+            background: white;
+            color: var(--text);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+            pointer-events: auto;
+        }
+
+        .tour-bubble::before {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+        }
+
+        .tour-bubble.arrow-top::before {
+            top: -6px;
+            left: 25px;
+        }
+
+        .tour-bubble.arrow-bottom::before {
+            bottom: -6px;
+            left: 25px;
+        }
+
+        .tour-bubble.arrow-left::before {
+            left: -6px;
+            top: 22px;
+        }
+
+        .tour-bubble.arrow-right::before {
+            right: -6px;
+            top: 22px;
+        }
+
+        .tour-step-count {
+            color: var(--tea);
+            font-size: 0.68rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .tour-bubble h3 {
+            margin: 0 0 5px;
+            color: var(--forest);
+            font-size: 0.95rem;
+        }
+
+        .tour-bubble p {
             margin: 0;
             color: var(--muted);
-            font-size: 0.8rem;
-            line-height: 1.55;
+            font-size: 0.78rem;
+            line-height: 1.5;
         }
 
-        .help-close {
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
+        .tour-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tour-controls button {
             border: none;
-            border-radius: 25px;
+            border-radius: 18px;
+            padding: 7px 13px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tour-prev {
+            background: var(--paper);
+            color: var(--forest);
+        }
+
+        .tour-next {
+            margin-left: auto;
             background: var(--forest);
             color: white;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
+        }
+
+        .tour-prev:disabled {
+            opacity: 0.35;
+            cursor: default;
         }
 
         /* 直向手機 */
 
         @media (orientation: portrait) {
             .app {
-                grid-template-rows: auto minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 0.72fr);
+                grid-template-rows:
+                    auto
+                    minmax(0, 1.05fr)
+                    minmax(0, 0.95fr)
+                    minmax(0, 0.72fr);
             }
         }
 
@@ -672,6 +724,14 @@
             .card-name {
                 font-size: 0.62rem;
             }
+
+            .header a {
+                font-size: 0.78rem;
+            }
+
+            .header h1 {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -681,30 +741,27 @@
 <div class="app">
 
     <!-- 頁首 -->
-    <header class="header">
+    <header class="header" id="header">
         <a href="index.html">← 回到主頁</a>
         <h1>一心二葉・坪心而唱</h1>
         <button class="help-btn" id="helpBtn" aria-label="操作說明">?</button>
     </header>
 
     <!-- 主畫面 -->
-    <section class="main-panel">
+    <section class="main-panel" id="mainPanel">
 
         <div class="main-image-wrap">
-
             <img
                 id="mainImage"
                 class="main-image"
                 alt="聲音素材圖片"
             >
 
-            <!-- 尚未選擇素材時的預設畫面 -->
             <div class="main-placeholder" id="mainPlaceholder">
                 <div class="placeholder-icon">♧</div>
                 <div>請點選下方素材</div>
                 <div>查看圖片與聲音介紹</div>
             </div>
-
         </div>
 
         <div class="main-info">
@@ -729,7 +786,7 @@
     <section class="materials-panel" id="materialsPanel"></section>
 
     <!-- 拼貼區 -->
-    <section class="collage-panel">
+    <section class="collage-panel" id="collagePanel">
 
         <div class="collage-heading">
             <h2>聲音拼貼</h2>
@@ -757,60 +814,28 @@
 </div>
 
 
-<!-- 操作說明彈窗 -->
-<div class="help-overlay" id="helpOverlay">
+<!-- 逐步操作導覽 -->
+<div class="tour-overlay" id="tourOverlay">
 
-    <div class="help-box" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="tour-shade" id="shadeTop"></div>
+    <div class="tour-shade" id="shadeLeft"></div>
+    <div class="tour-shade" id="shadeRight"></div>
+    <div class="tour-shade" id="shadeBottom"></div>
 
-        <h2 id="helpTitle">聲音拼貼操作說明</h2>
+    <div class="tour-bubble" id="tourBubble">
 
-        <p class="help-subtitle">
-            選擇喜歡的聲音素材，試著組合出自己的聲音風景。
-        </p>
-
-        <div class="help-step">
-            <div class="help-number">1</div>
-            <div>
-                <strong>點擊素材</strong>
-                <p>點擊下方素材，即可查看圖片與介紹，並播放或暫停原始／加工聲音。</p>
-            </div>
+        <div class="tour-step-count" id="tourStepCount">
+            STEP 1 / 5
         </div>
 
-        <div class="help-step">
-            <div class="help-number">2</div>
-            <div>
-                <strong>切換聲音版本</strong>
-                <p>在素材格子上左右滑動，即可切換原始聲音與加工版本。再次滑動即可切回。</p>
-            </div>
-        </div>
+        <h3 id="tourTitle"></h3>
 
-        <div class="help-step">
-            <div class="help-number">3</div>
-            <div>
-                <strong>加入聲音拼貼</strong>
-                <p>長按素材，接著拖曳至下方拼貼區。加入的是當下選取的聲音版本。</p>
-            </div>
-        </div>
+        <p id="tourDescription"></p>
 
-        <div class="help-step">
-            <div class="help-number">4</div>
-            <div>
-                <strong>完成拼貼</strong>
-                <p>放入素材後，按下「確認拼貼」即可播放組合後的聲音。按下「清空」可以重新選擇。</p>
-            </div>
+        <div class="tour-controls">
+            <button class="tour-prev" id="tourPrev">上一步</button>
+            <button class="tour-next" id="tourNext">下一步 →</button>
         </div>
-
-        <div class="help-step">
-            <div class="help-number">5</div>
-            <div>
-                <strong>重新聆聽素材</strong>
-                <p>素材加入拼貼後仍會留在原本的位置，可以隨時再次點擊聆聽。</p>
-            </div>
-        </div>
-
-        <button class="help-close" id="helpCloseBtn">
-            開始體驗
-        </button>
 
     </div>
 
@@ -880,7 +905,6 @@
        狀態
     ================================================= */
 
-    // 初始不選取任何素材
     let currentMaterial = null;
     let currentVersion = null;
 
@@ -906,23 +930,196 @@
 
 
     /* =================================================
-       操作說明彈窗
+       逐步操作導覽
     ================================================= */
 
-    const helpOverlay = document.getElementById("helpOverlay");
-    const helpBtn = document.getElementById("helpBtn");
-    const helpCloseBtn = document.getElementById("helpCloseBtn");
+    const tourOverlay = document.getElementById("tourOverlay");
+    const tourBubble = document.getElementById("tourBubble");
 
-    function openHelp() {
-        helpOverlay.classList.remove("hidden");
+    const tourSteps = [
+        {
+            target: "materialsPanel",
+            title: "① 選擇聲音素材",
+            description: "點擊素材，可以查看圖片與介紹，並播放或暫停聲音。",
+            placement: "top"
+        },
+        {
+            target: "mainPanel",
+            title: "② 聆聽與認識素材",
+            description: "這裡會顯示所選素材的圖片、介紹，以及播放控制。",
+            placement: "bottom"
+        },
+        {
+            target: "materialsPanel",
+            title: "③ 切換聲音版本",
+            description: "在素材格子上左右滑動，即可切換原始聲音與加工版本。",
+            placement: "top"
+        },
+        {
+            target: "collagePanel",
+            title: "④ 加入聲音拼貼",
+            description: "長按素材並拖曳至下方拼貼區，加入當下選取的聲音版本。",
+            placement: "top"
+        },
+        {
+            target: "collagePanel",
+            title: "⑤ 完成你的聲音風景",
+            description: "加入素材後，按下「確認拼貼」播放組合聲音。素材仍會留在原處，可以再次聆聽。",
+            placement: "top"
+        }
+    ];
+
+    let currentTourStep = 0;
+
+    const shadeTop = document.getElementById("shadeTop");
+    const shadeLeft = document.getElementById("shadeLeft");
+    const shadeRight = document.getElementById("shadeRight");
+    const shadeBottom = document.getElementById("shadeBottom");
+
+    const tourStepCount = document.getElementById("tourStepCount");
+    const tourTitle = document.getElementById("tourTitle");
+    const tourDescription = document.getElementById("tourDescription");
+
+    const tourPrev = document.getElementById("tourPrev");
+    const tourNext = document.getElementById("tourNext");
+
+
+    function openTour() {
+        currentTourStep = 0;
+        tourOverlay.classList.add("active");
+
+        requestAnimationFrame(showTourStep);
     }
 
-    function closeHelp() {
-        helpOverlay.classList.add("hidden");
+    function closeTour() {
+        tourOverlay.classList.remove("active");
     }
 
-    helpBtn.addEventListener("click", openHelp);
-    helpCloseBtn.addEventListener("click", closeHelp);
+    function showTourStep() {
+        const step = tourSteps[currentTourStep];
+        const target = document.getElementById(step.target);
+
+        if (!target) return;
+
+        const rect = target.getBoundingClientRect();
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const left = Math.max(0, rect.left - 5);
+        const top = Math.max(0, rect.top - 5);
+        const right = Math.min(width, rect.right + 5);
+        const bottom = Math.min(height, rect.bottom + 5);
+
+        /* 四個遮罩區塊，留下目標區域 */
+
+        shadeTop.style.left = "0";
+        shadeTop.style.top = "0";
+        shadeTop.style.width = width + "px";
+        shadeTop.style.height = top + "px";
+
+        shadeLeft.style.left = "0";
+        shadeLeft.style.top = top + "px";
+        shadeLeft.style.width = left + "px";
+        shadeLeft.style.height = (bottom - top) + "px";
+
+        shadeRight.style.left = right + "px";
+        shadeRight.style.top = top + "px";
+        shadeRight.style.width = (width - right) + "px";
+        shadeRight.style.height = (bottom - top) + "px";
+
+        shadeBottom.style.left = "0";
+        shadeBottom.style.top = bottom + "px";
+        shadeBottom.style.width = width + "px";
+        shadeBottom.style.height = (height - bottom) + "px";
+
+        tourStepCount.textContent =
+            `STEP ${currentTourStep + 1} / ${tourSteps.length}`;
+
+        tourTitle.textContent = step.title;
+        tourDescription.textContent = step.description;
+
+        tourPrev.disabled = currentTourStep === 0;
+
+        if (currentTourStep === tourSteps.length - 1) {
+            tourNext.textContent = "完成 ✓";
+        } else {
+            tourNext.textContent = "下一步 →";
+        }
+
+        /* 提示框位置 */
+
+        tourBubble.className = "tour-bubble";
+
+        const bubbleWidth = Math.min(270, width - 36);
+        const bubbleHeight = tourBubble.offsetHeight || 145;
+
+        let bubbleLeft = 18;
+        let bubbleTop;
+
+        if (step.placement === "top") {
+            bubbleTop = top - bubbleHeight - 13;
+
+            if (bubbleTop < 10) {
+                bubbleTop = bottom + 13;
+                tourBubble.classList.add("arrow-top");
+            } else {
+                tourBubble.classList.add("arrow-bottom");
+            }
+
+            bubbleLeft = Math.max(
+                18,
+                Math.min(left + 10, width - bubbleWidth - 18)
+            );
+
+        } else {
+            bubbleTop = bottom + 13;
+
+            if (bubbleTop + bubbleHeight > height - 10) {
+                bubbleTop = top - bubbleHeight - 13;
+                tourBubble.classList.add("arrow-bottom");
+            } else {
+                tourBubble.classList.add("arrow-top");
+            }
+
+            bubbleLeft = Math.max(
+                18,
+                Math.min(left + 10, width - bubbleWidth - 18)
+            );
+        }
+
+        bubbleTop = Math.max(
+            10,
+            Math.min(bubbleTop, height - bubbleHeight - 10)
+        );
+
+        tourBubble.style.left = bubbleLeft + "px";
+        tourBubble.style.top = bubbleTop + "px";
+    }
+
+    tourPrev.addEventListener("click", () => {
+        if (currentTourStep > 0) {
+            currentTourStep--;
+            showTourStep();
+        }
+    });
+
+    tourNext.addEventListener("click", () => {
+        if (currentTourStep < tourSteps.length - 1) {
+            currentTourStep++;
+            showTourStep();
+        } else {
+            closeTour();
+        }
+    });
+
+    document.getElementById("helpBtn").addEventListener("click", openTour);
+
+    window.addEventListener("resize", () => {
+        if (tourOverlay.classList.contains("active")) {
+            showTourStep();
+        }
+    });
 
 
     /* =================================================
@@ -992,7 +1189,6 @@
 
     /* =================================================
        單獨素材播放
-       同一時間只播放一個
     ================================================= */
 
     function getPreviewUrl(item, version) {
@@ -1136,7 +1332,8 @@
                 moved = true;
             }
 
-            // 長按後才允許拖曳
+            /* 長按後才允許拖曳 */
+
             if (longPressed && moved) {
                 if (!dragging) {
                     dragging = true;
@@ -1165,7 +1362,8 @@
                 return;
             }
 
-            // 未達長按時間的水平滑動：翻轉
+            /* 未達長按時間的水平滑動：翻轉 */
+
             if (
                 !longPressed &&
                 !swiped &&
@@ -1204,7 +1402,8 @@
                 return;
             }
 
-            // 短時間點擊：顯示介紹並播放／暫停
+            /* 短時間點擊：顯示介紹並播放／暫停 */
+
             const elapsed = Date.now() - pointerStartTime;
 
             if (!longPressed && !swiped && !moved && elapsed < LONG_PRESS_TIME) {
@@ -1247,13 +1446,12 @@
             material => material.id === card.dataset.id
         );
 
-        // 若目前主畫面顯示的正是這個素材，同步更新版本
         if (item && currentMaterial && currentMaterial.id === item.id) {
             updateMainDisplay(item, version);
 
-            // 切換版本時停止舊版本，避免播放狀態與畫面不一致
             previewAudio.pause();
             previewAudio.currentTime = 0;
+
             updatePreviewButton();
         }
     }
@@ -1294,6 +1492,7 @@
 
     /* =================================================
        拼貼區顯示
+       顯示拖曳當下的原始／加工版本
     ================================================= */
 
     function renderCollage() {
@@ -1311,8 +1510,12 @@
             const div = document.createElement("div");
             div.className = "collage-item";
 
+            const versionText =
+                item.version === "original" ? "原始" : "加工版";
+
             div.innerHTML = `
                 <img src="${item.image}" alt="${item.title}">
+                <span class="collage-version">${versionText}</span>
                 <button class="remove-item" aria-label="移除">×</button>
             `;
 
@@ -1436,8 +1639,8 @@
     renderCollage();
     updatePreviewButton();
 
-    // 每次進入頁面時，自動顯示操作說明
-    openHelp();
+    /* 每次進入頁面時自動開始操作導覽 */
+    openTour();
 
 </script>
 
