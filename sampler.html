@@ -1,0 +1,1235 @@
+DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>聲音採集與拼貼｜一心二葉・坪心而唱</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        :root {
+            --forest: #385C45;
+            --tea: #789477;
+            --cream: #F5F4EC;
+            --paper: #E9E8D8;
+            --earth: #B9A47C;
+            --text: #333D34;
+            --muted: #858B82;
+            --white: #FFFFFF;
+            --shadow: 0 5px 18px rgba(56, 92, 69, 0.09);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            touch-action: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================
+           整體版面
+        ========================= */
+
+        .app {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            padding: 10px 16px;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 0.75fr);
+            gap: 9px;
+            overflow: hidden;
+        }
+
+        /* =========================
+           頁首
+        ========================= */
+
+        .header {
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .header a {
+            color: var(--forest);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--forest);
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .header-space {
+            width: 65px;
+            flex-shrink: 0;
+        }
+
+        /* =========================
+           主畫面
+        ========================= */
+
+        .main-panel {
+            min-height: 0;
+            background: var(--white);
+            border-radius: 18px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .main-image-wrap {
+            min-width: 0;
+            min-height: 0;
+            overflow: hidden;
+            border-radius: 13px;
+            background: var(--paper);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .main-info {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .main-info h2 {
+            margin: 0 0 5px;
+            color: var(--forest);
+            font-size: clamp(1rem, 3.8vw, 1.35rem);
+        }
+
+        .main-info p {
+            margin: 0;
+            color: var(--muted);
+            font-size: clamp(0.72rem, 2.8vw, 0.88rem);
+            line-height: 1.45;
+            overflow: hidden;
+        }
+
+        .version-label {
+            display: inline-block;
+            align-self: flex-start;
+            margin-top: 7px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: var(--paper);
+            color: var(--forest);
+            font-size: 0.7rem;
+        }
+
+        .main-play {
+            margin-top: 9px;
+            width: 100%;
+            min-height: 34px;
+            border: none;
+            border-radius: 20px;
+            background: var(--forest);
+            color: white;
+            font-weight: bold;
+            font-size: 0.82rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .main-play.playing {
+            background: var(--earth);
+        }
+
+        /* =========================
+           素材格子
+        ========================= */
+
+        .materials-panel {
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .material-card {
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            border: 2px solid transparent;
+            border-radius: 13px;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            perspective: 600px;
+        }
+
+        .material-card.selected {
+            border-color: var(--tea);
+            opacity: 1;
+        }
+
+        .material-card.dragging {
+            opacity: 0.75;
+            z-index: 50;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.35s ease;
+        }
+
+        .material-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .card-face img {
+            width: 100%;
+            height: 68%;
+            min-height: 0;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .card-name {
+            flex: 1;
+            min-height: 0;
+            padding: 3px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--forest);
+            font-size: clamp(0.65rem, 2.5vw, 0.82rem);
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        .card-play {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 27px;
+            height: 27px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(56, 92, 69, 0.92);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .material-card.is-playing .card-play {
+            display: flex;
+            background: var(--earth);
+        }
+
+        .flip-mark {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            padding: 3px 6px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.88);
+            color: var(--forest);
+            font-size: 0.6rem;
+            pointer-events: none;
+        }
+
+        /* =========================
+           拼貼區
+        ========================= */
+
+        .collage-panel {
+            min-height: 0;
+            padding: 8px 10px;
+            border-radius: 16px;
+            background: var(--paper);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .collage-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+
+        .collage-heading h2 {
+            margin: 0;
+            color: var(--forest);
+            font-size: 0.9rem;
+        }
+
+        .collage-heading span {
+            color: var(--muted);
+            font-size: 0.68rem;
+        }
+
+        .drop-area {
+            min-height: 0;
+            flex: 1;
+            border: 2px dashed rgba(56, 92, 69, 0.35);
+            border-radius: 11px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        .drop-area.drag-over {
+            background: rgba(120, 148, 119, 0.2);
+            border-color: var(--forest);
+        }
+
+        .drop-hint {
+            width: 100%;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .collage-item {
+            position: relative;
+            min-width: 0;
+            flex: 1;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--white);
+        }
+
+        .collage-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-item {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 21px;
+            height: 21px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(56, 92, 69, 0.9);
+            color: white;
+            font-size: 0.8rem;
+            line-height: 1;
+        }
+
+        .collage-actions {
+            display: flex;
+            gap: 7px;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .collage-actions button {
+            min-height: 31px;
+            border: none;
+            border-radius: 18px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .clear-btn {
+            padding: 0 13px;
+            background: var(--white);
+            color: var(--forest);
+        }
+
+        .confirm-btn {
+            flex: 1;
+            background: var(--forest);
+            color: white;
+        }
+
+        .confirm-btn:disabled {
+            background: #c5c8bd;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           拖曳提示
+        ========================= */
+
+        .drag-ghost {
+            position: fixed;
+            z-index: 9999;
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            object-fit: cover;
+            pointer-events: none;
+            opacity: 0.85;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            transform: translate(-50%, -50%);
+        }
+
+        /* =========================
+           直向手機微調
+        ========================= */
+
+        @media (orientation: portrait) {
+            .app {
+                grid-template-rows: auto minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 0.72fr);
+            }
+        }
+
+        /* =========================
+           橫向手機：左右分區
+        ========================= */
+
+        @media (orientation: landscape) {
+            .app {
+                padding: 7px 12px;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                grid-template-rows: auto minmax(0, 1fr) minmax(0, 0.75fr);
+                gap: 7px 10px;
+            }
+
+            .header {
+                grid-column: 1 / -1;
+                min-height: 28px;
+            }
+
+            .main-panel {
+                grid-column: 1;
+                grid-row: 2;
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-rows: minmax(0, 1fr) auto;
+                gap: 5px;
+            }
+
+            .main-image-wrap {
+                min-height: 0;
+            }
+
+            .main-info {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                align-items: center;
+                column-gap: 8px;
+            }
+
+            .main-info h2 {
+                font-size: 0.95rem;
+                margin: 0;
+            }
+
+            .main-info p,
+            .version-label {
+                display: none;
+            }
+
+            .main-play {
+                grid-column: 2;
+                grid-row: 1;
+                width: 90px;
+                margin: 0;
+                min-height: 30px;
+            }
+
+            .materials-panel {
+                grid-column: 2;
+                grid-row: 2;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-rows: repeat(2, minmax(0, 1fr));
+            }
+
+            .collage-panel {
+                grid-column: 1 / -1;
+                grid-row: 3;
+            }
+
+            .card-face img {
+                height: 70%;
+            }
+        }
+
+        @media (max-height: 420px) and (orientation: landscape) {
+            .app {
+                padding: 4px 9px;
+                gap: 5px;
+            }
+
+            .header {
+                min-height: 23px;
+            }
+
+            .header h1 {
+                font-size: 0.9rem;
+            }
+
+            .main-panel {
+                padding: 6px;
+            }
+
+            .collage-panel {
+                padding: 5px 8px;
+            }
+
+            .collage-heading {
+                margin-bottom: 3px;
+            }
+
+            .collage-actions {
+                margin-top: 3px;
+            }
+        }
+
+        @media (max-width: 350px) and (orientation: portrait) {
+            .app {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .materials-panel {
+                gap: 5px;
+            }
+
+            .card-name {
+                font-size: 0.62rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- 頁首 -->
+    <header class="header">
+        <a href="index.html">← 回到主頁</a>
+        <h1>一心二葉・坪心而唱</h1>
+        <div class="header-space"></div>
+    </header>
+
+    <!-- 主畫面：圖片、介紹、單獨播放 -->
+    <section class="main-panel">
+
+        <div class="main-image-wrap">
+            <img
+                id="mainImage"
+                class="main-image"
+                src="images/photo_2_1.jpg"
+                alt="聲音素材圖片"
+            >
+        </div>
+
+        <div class="main-info">
+            <h2 id="mainTitle">走路聲</h2>
+
+            <p id="mainDescription">
+                選擇下方素材，查看圖片與聲音介紹。
+            </p>
+
+            <span class="version-label" id="versionLabel">
+                原始聲音
+            </span>
+
+            <button class="main-play" id="mainPlayBtn">
+                ▶ 播放素材
+            </button>
+        </div>
+
+    </section>
+
+    <!-- 素材縮圖 -->
+    <section class="materials-panel" id="materialsPanel"></section>
+
+    <!-- 拼貼區 -->
+    <section class="collage-panel">
+
+        <div class="collage-heading">
+            <h2>聲音拼貼</h2>
+            <span id="collageCount">已放入 0 個素材</span>
+        </div>
+
+        <div class="drop-area" id="dropArea">
+            <div class="drop-hint" id="dropHint">
+                長按素材並拖曳至此
+            </div>
+        </div>
+
+        <div class="collage-actions">
+            <button class="clear-btn" id="clearBtn">
+                清空
+            </button>
+
+            <button class="confirm-btn" id="confirmBtn" disabled>
+                ▶ 確認拼貼
+            </button>
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+    /* =================================================
+       素材資料設定
+
+       原始聲音：
+       audio/single_1.mp3 ～ single_5.mp3
+
+       以下加工版與拼貼版路徑先作為預留範例。
+       之後取得正式檔案時，只需修改這裡。
+    ================================================= */
+
+    const materials = [
+        {
+            id: "single_1",
+            title: "走路聲",
+            image: "images/photo_2_1.jpg",
+            description: "坪林田野採集的走路聲音素材。",
+            original: "audio/single_1.mp3",
+            processed: "audio/processed_single_1.mp3",
+            collageOriginal: "audio/collage_1_original.mp3",
+            collageProcessed: "audio/collage_1_processed.mp3"
+        },
+        {
+            id: "single_2",
+            title: "蟲鳴鳥叫聲",
+            image: "images/photo_2_2.jpg",
+            description: "坪林山林中的蟲鳴與鳥叫聲。",
+            original: "audio/single_2.mp3",
+            processed: "audio/processed_single_2.mp3",
+            collageOriginal: "audio/collage_2_original.mp3",
+            collageProcessed: "audio/collage_2_processed.mp3"
+        },
+        {
+            id: "single_3",
+            title: "河流聲",
+            image: "images/photo_2_3.jpg",
+            description: "採集自坪林河流的流水聲。",
+            original: "audio/single_3.mp3",
+            processed: "audio/processed_single_3.mp3",
+            collageOriginal: "audio/collage_3_original.mp3",
+            collageProcessed: "audio/collage_3_processed.mp3"
+        },
+        {
+            id: "single_4",
+            title: "採茶聲",
+            image: "images/photo_2_4.jpg",
+            description: "採集採摘茶葉時所產生的聲音。",
+            original: "audio/single_4.mp3",
+            processed: "audio/processed_single_4.mp3",
+            collageOriginal: "audio/collage_4_original.mp3",
+            collageProcessed: "audio/collage_4_processed.mp3"
+        },
+        {
+            id: "single_5",
+            title: "竹簍掃動茶葉聲",
+            image: "images/photo_2_5.jpg",
+            description: "竹簍掃動茶葉時所產生的聲音。",
+            original: "audio/single_5.mp3",
+            processed: "audio/processed_single_5.mp3",
+            collageOriginal: "audio/collage_5_original.mp3",
+            collageProcessed: "audio/collage_5_processed.mp3"
+        }
+    ];
+
+
+    /* =================================================
+       狀態
+    ================================================= */
+
+    let currentMaterial = materials[0];
+    let currentVersion = "original";
+
+    let previewAudio = new Audio();
+    previewAudio.loop = true;
+
+    let collageItems = [];
+    let tonePlayers = [];
+    let collagePlaying = false;
+
+    const materialsPanel = document.getElementById("materialsPanel");
+    const dropArea = document.getElementById("dropArea");
+
+    const mainImage = document.getElementById("mainImage");
+    const mainTitle = document.getElementById("mainTitle");
+    const mainDescription = document.getElementById("mainDescription");
+    const versionLabel = document.getElementById("versionLabel");
+    const mainPlayBtn = document.getElementById("mainPlayBtn");
+
+    const confirmBtn = document.getElementById("confirmBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+
+    /* =================================================
+       建立素材格子
+    ================================================= */
+
+    function renderMaterials() {
+        materialsPanel.innerHTML = "";
+
+        materials.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "material-card";
+            card.dataset.id = item.id;
+
+            card.innerHTML = `
+                <div class="card-inner">
+
+                    <div class="card-face card-front">
+                        <img src="${item.image}" alt="${item.title}">
+                        <div class="card-name">${item.title}</div>
+                    </div>
+
+                    <div class="card-face card-back">
+                        <img src="${item.image}" alt="${item.title}">
+                        <div class="card-name">${item.title}・加工版</div>
+                    </div>
+
+                </div>
+
+                <span class="flip-mark">原始</span>
+                <span class="card-play">Ⅱ</span>
+            `;
+
+            materialsPanel.appendChild(card);
+            attachCardEvents(card, item);
+        });
+    }
+
+
+    /* =================================================
+       主畫面更新
+    ================================================= */
+
+    function updateMainDisplay(item, version) {
+        currentMaterial = item;
+        currentVersion = version;
+
+        mainImage.src = item.image;
+        mainImage.alt = item.title;
+
+        mainTitle.textContent = item.title;
+        mainDescription.textContent = item.description;
+
+        versionLabel.textContent =
+            version === "original" ? "原始聲音" : "加工後的聲音";
+
+        document.querySelectorAll(".material-card").forEach(card => {
+            card.classList.toggle(
+                "flipped",
+                card.dataset.version === "processed"
+            );
+
+            const mark = card.querySelector(".flip-mark");
+            if (mark) {
+                mark.textContent =
+                    card.classList.contains("flipped") ? "加工版" : "原始";
+            }
+        });
+
+        updatePreviewButton();
+    }
+
+
+    /* =================================================
+       單獨素材播放：同一時間只播放一個
+    ================================================= */
+
+    function getPreviewUrl(item, version) {
+        return version === "original"
+            ? item.original
+            : item.processed;
+    }
+
+    function updatePreviewButton() {
+        const isThisPlaying =
+            !previewAudio.paused &&
+            previewAudio.dataset.material === currentMaterial.id &&
+            previewAudio.dataset.version === currentVersion;
+
+        mainPlayBtn.textContent =
+            isThisPlaying ? "Ⅱ 暫停素材" : "▶ 播放素材";
+
+        mainPlayBtn.classList.toggle("playing", isThisPlaying);
+
+        document.querySelectorAll(".material-card").forEach(card => {
+            const isPlaying =
+                !previewAudio.paused &&
+                previewAudio.dataset.material === card.dataset.id &&
+                previewAudio.dataset.version === card.dataset.version;
+
+            card.classList.toggle("is-playing", isPlaying);
+            card.querySelector(".card-play").textContent =
+                isPlaying ? "Ⅱ" : "▶";
+        });
+    }
+
+    async function togglePreview(item, version) {
+        const sameAudio =
+            previewAudio.dataset.material === item.id &&
+            previewAudio.dataset.version === version;
+
+        if (sameAudio && !previewAudio.paused) {
+            previewAudio.pause();
+            updatePreviewButton();
+            return;
+        }
+
+        previewAudio.pause();
+        previewAudio.currentTime = 0;
+
+        const url = getPreviewUrl(item, version);
+
+        previewAudio.src = url;
+        previewAudio.dataset.material = item.id;
+        previewAudio.dataset.version = version;
+
+        try {
+            await previewAudio.play();
+        } catch (error) {
+            console.error("素材播放失敗：", error);
+            alert("目前無法播放這個音檔，請確認音檔路徑是否正確。");
+        }
+
+        updatePreviewButton();
+    }
+
+    mainPlayBtn.addEventListener("click", () => {
+        togglePreview(currentMaterial, currentVersion);
+    });
+
+    previewAudio.addEventListener("play", updatePreviewButton);
+    previewAudio.addEventListener("pause", updatePreviewButton);
+    previewAudio.addEventListener("ended", updatePreviewButton);
+
+
+    /* =================================================
+       素材操作判定
+
+       點擊：顯示介紹並播放／暫停
+       水平滑動：翻轉原始／加工版
+       長按後移動：拖曳至拼貼區
+    ================================================= */
+
+    const LONG_PRESS_TIME = 380;
+    const SWIPE_DISTANCE = 35;
+    const MOVE_CANCEL_DISTANCE = 12;
+
+    function attachCardEvents(card, item) {
+        let pointerStartX = 0;
+        let pointerStartY = 0;
+        let pointerStartTime = 0;
+
+        let longPressTimer = null;
+        let longPressed = false;
+        let swiped = false;
+        let dragging = false;
+
+        let ghost = null;
+        let moved = false;
+
+        card.dataset.version = "original";
+
+        card.addEventListener("contextmenu", event => {
+            event.preventDefault();
+        });
+
+        card.addEventListener("pointerdown", event => {
+            if (event.pointerType === "mouse" && event.button !== 0) {
+                return;
+            }
+
+            event.preventDefault();
+
+            pointerStartX = event.clientX;
+            pointerStartY = event.clientY;
+            pointerStartTime = Date.now();
+
+            longPressed = false;
+            swiped = false;
+            dragging = false;
+            moved = false;
+
+            card.setPointerCapture(event.pointerId);
+
+            longPressTimer = setTimeout(() => {
+                longPressed = true;
+            }, LONG_PRESS_TIME);
+        });
+
+        card.addEventListener("pointermove", event => {
+            const dx = event.clientX - pointerStartX;
+            const dy = event.clientY - pointerStartY;
+
+            if (Math.abs(dx) > MOVE_CANCEL_DISTANCE ||
+                Math.abs(dy) > MOVE_CANCEL_DISTANCE) {
+                moved = true;
+            }
+
+            // 長按後才允許拖曳
+            if (longPressed && moved) {
+                if (!dragging) {
+                    dragging = true;
+                    card.classList.add("dragging");
+
+                    ghost = document.createElement("img");
+                    ghost.src = item.image;
+                    ghost.className = "drag-ghost";
+                    document.body.appendChild(ghost);
+                }
+
+                if (ghost) {
+                    ghost.style.left = event.clientX + "px";
+                    ghost.style.top = event.clientY + "px";
+                }
+
+                const rect = dropArea.getBoundingClientRect();
+                const overDropArea =
+                    event.clientX >= rect.left &&
+                    event.clientX <= rect.right &&
+                    event.clientY >= rect.top &&
+                    event.clientY <= rect.bottom;
+
+                dropArea.classList.toggle("drag-over", overDropArea);
+                return;
+            }
+
+            // 未達長按時間的水平滑動：翻轉
+            if (
+                !longPressed &&
+                !swiped &&
+                Math.abs(dx) > SWIPE_DISTANCE &&
+                Math.abs(dx) > Math.abs(dy) * 1.2
+            ) {
+                swiped = true;
+                clearTimeout(longPressTimer);
+                flipCard(card);
+            }
+        });
+
+        card.addEventListener("pointerup", event => {
+            clearTimeout(longPressTimer);
+
+            if (dragging) {
+                const rect = dropArea.getBoundingClientRect();
+
+                const overDropArea =
+                    event.clientX >= rect.left &&
+                    event.clientX <= rect.right &&
+                    event.clientY >= rect.top &&
+                    event.clientY <= rect.bottom;
+
+                if (overDropArea) {
+                    addToCollage(item, card.dataset.version);
+                }
+
+                card.classList.remove("dragging");
+                dropArea.classList.remove("drag-over");
+
+                if (ghost) ghost.remove();
+
+                ghost = null;
+                dragging = false;
+                return;
+            }
+
+            // 短時間點擊：顯示介紹並播放／暫停
+            const elapsed = Date.now() - pointerStartTime;
+
+            if (!longPressed && !swiped && !moved && elapsed < LONG_PRESS_TIME) {
+                const version = card.dataset.version;
+
+                updateMainDisplay(item, version);
+                togglePreview(item, version);
+            }
+        });
+
+        card.addEventListener("pointercancel", () => {
+            clearTimeout(longPressTimer);
+
+            card.classList.remove("dragging");
+            dropArea.classList.remove("drag-over");
+
+            if (ghost) ghost.remove();
+
+            ghost = null;
+            dragging = false;
+        });
+    }
+
+
+    /* =================================================
+       翻轉素材
+    ================================================= */
+
+    function flipCard(card) {
+        const isFlipped = card.classList.toggle("flipped");
+
+        const version = isFlipped ? "processed" : "original";
+
+        card.dataset.version = version;
+
+        const mark = card.querySelector(".flip-mark");
+        mark.textContent = isFlipped ? "加工版" : "原始";
+
+        const item = materials.find(
+            material => material.id === card.dataset.id
+        );
+
+        if (item && currentMaterial.id === item.id) {
+            updateMainDisplay(item, version);
+        }
+    }
+
+
+    /* =================================================
+       加入拼貼區
+       同一素材只能加入一次
+    ================================================= */
+
+    function addToCollage(item, version) {
+        if (collageItems.some(selected => selected.id === item.id)) {
+            return;
+        }
+
+        collageItems.push({
+            id: item.id,
+            title: item.title,
+            image: item.image,
+            version: version,
+            audio: version === "original"
+                ? item.collageOriginal
+                : item.collageProcessed
+        });
+
+        const card = document.querySelector(
+            `.material-card[data-id="${item.id}"]`
+        );
+
+        if (card) {
+            card.classList.add("selected");
+        }
+
+        renderCollage();
+    }
+
+
+    /* =================================================
+       拼貼區顯示
+    ================================================= */
+
+    function renderCollage() {
+        dropArea.innerHTML = "";
+
+        if (collageItems.length === 0) {
+            dropArea.innerHTML = `
+                <div class="drop-hint">
+                    長按素材並拖曳至此
+                </div>
+            `;
+        }
+
+        collageItems.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "collage-item";
+
+            div.innerHTML = `
+                <img src="${item.image}" alt="${item.title}">
+                <button class="remove-item" aria-label="移除">×</button>
+            `;
+
+            div.querySelector(".remove-item").addEventListener("click", () => {
+                removeFromCollage(item.id);
+            });
+
+            dropArea.appendChild(div);
+        });
+
+        document.getElementById("collageCount").textContent =
+            `已放入 ${collageItems.length} 個素材`;
+
+        confirmBtn.disabled = collageItems.length === 0;
+    }
+
+    function removeFromCollage(id) {
+        collageItems = collageItems.filter(item => item.id !== id);
+
+        const card = document.querySelector(
+            `.material-card[data-id="${id}"]`
+        );
+
+        if (card) {
+            card.classList.remove("selected");
+        }
+
+        renderCollage();
+    }
+
+    clearBtn.addEventListener("click", () => {
+        if (collagePlaying) stopCollage();
+
+        collageItems = [];
+
+        document.querySelectorAll(".material-card").forEach(card => {
+            card.classList.remove("selected");
+        });
+
+        renderCollage();
+    });
+
+
+    /* =================================================
+       拼貼播放：同步播放各素材的節奏版本
+    ================================================= */
+
+    function disposeCollagePlayers() {
+        tonePlayers.forEach(player => {
+            player.stop();
+            player.dispose();
+        });
+
+        tonePlayers = [];
+    }
+
+    async function startCollage() {
+        if (collageItems.length === 0 || collagePlaying) return;
+
+        try {
+            await Tone.start();
+
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+
+            disposeCollagePlayers();
+
+            collageItems.forEach(item => {
+                const player = new Tone.Player({
+                    url: item.audio,
+                    loop: true
+                }).toDestination();
+
+                player.sync().start(0);
+                tonePlayers.push(player);
+            });
+
+            await Tone.loaded();
+
+            Tone.Transport.start();
+
+            collagePlaying = true;
+            confirmBtn.textContent = "■ 停止拼貼";
+            confirmBtn.classList.add("playing");
+
+        } catch (error) {
+            console.error("拼貼播放失敗：", error);
+            alert("拼貼音檔尚未準備完成，請確認音檔路徑。");
+
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+            disposeCollagePlayers();
+        }
+    }
+
+    function stopCollage() {
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
+
+        disposeCollagePlayers();
+
+        collagePlaying = false;
+        confirmBtn.textContent = "▶ 確認拼貼";
+        confirmBtn.classList.remove("playing");
+    }
+
+    confirmBtn.addEventListener("click", async () => {
+        if (collagePlaying) {
+            stopCollage();
+        } else {
+            await startCollage();
+        }
+    });
+
+
+    /* =================================================
+       初始化
+    ================================================= */
+
+    renderMaterials();
+    updateMainDisplay(materials[0], "original");
+    renderCollage();
+
+</script>
+
+</body>
+</html>
