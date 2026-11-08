@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -224,6 +223,16 @@
             background: var(--forest);
         }
 
+        /* 新增 sampler 按鈕 */
+
+        .main-btn.sampler {
+            background: var(--forest);
+        }
+
+        .main-btn.sampler:hover {
+            background: var(--forest-dark);
+        }
+
         .btn-icon {
             display: flex;
             align-items: center;
@@ -428,6 +437,28 @@
         <!-- 功能按鈕 -->
         <nav class="btn-container">
 
+            <!-- 新增：聲音探索與拼貼 -->
+            <a href="sampler.html"
+               class="main-btn sampler">
+
+                <span class="btn-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 10v4"/>
+                        <path d="M7 6v12"/>
+                        <path d="M11 3v18"/>
+                        <path d="M15 7v10"/>
+                        <path d="M19 10v4"/>
+                    </svg>
+                </span>
+
+                <span data-i18n="btnSampler">
+                    聲音探索與拼貼
+                </span>
+
+            </a>
+
+
+            <!-- 原有：認識聲音素材 -->
             <a href="intro.html" class="main-btn">
 
                 <span class="btn-icon">
@@ -445,6 +476,7 @@
             </a>
 
 
+            <!-- 原有：相褒歌拼貼 -->
             <a href="collage.html"
                class="main-btn secondary">
 
@@ -501,6 +533,8 @@
 
                 intro: '歡迎來到坪林相褒歌的重組活動。在這裡，你可以先認識並聆聽 MV 當中的一些聲音元素，接著進入拼貼模式，將它們重新組合成屬於你的個人相褒歌。',
 
+                btnSampler: '聲音探索與拼貼',
+
                 btnIntro: '認識聲音素材',
 
                 btnCollage: '進入相褒歌拼貼',
@@ -516,6 +550,8 @@
                 bannerDescription: 'Voices of Nature · Songs of Pinglin',
 
                 intro: 'Welcome to the Pinglin Sio-Po-Kua reconstruction experience. Explore and listen to the individual sound elements from the music video, then enter collage mode to recombine them into your own interpretation of Sio-Po-Kua.',
+
+                btnSampler: 'Explore & Create Sounds',
 
                 btnIntro: 'Explore the Sounds',
 
