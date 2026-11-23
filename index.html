@@ -215,24 +215,6 @@
             transform: scale(0.97);
         }
 
-        .main-btn.secondary {
-            background: var(--tea);
-        }
-
-        .main-btn.secondary:hover {
-            background: var(--forest);
-        }
-
-        /* 新增 sampler 按鈕 */
-
-        .main-btn.sampler {
-            background: var(--forest);
-        }
-
-        .main-btn.sampler:hover {
-            background: var(--forest-dark);
-        }
-
         .btn-icon {
             display: flex;
             align-items: center;
@@ -427,19 +409,14 @@
         </div>
 
         <div class="intro-text" data-i18n="intro">
-            歡迎來到坪林相褒歌的重組活動。在這裡，
-            你可以先認識並聆聽 MV 當中的一些聲音元素，
-            接著進入拼貼模式，將它們重新組合成屬於
-            你的個人相褒歌。
+            歡迎來到坪林聲音探索與拼貼活動。在這裡，你可以聆聽坪林田野採集的聲音，切換原始與加工版本，並將喜歡的聲音素材重新組合，創作屬於自己的聲音風景。
         </div>
 
 
         <!-- 功能按鈕 -->
         <nav class="btn-container">
 
-            <!-- 新增：聲音探索與拼貼 -->
-            <a href="sampler.html"
-               class="main-btn sampler">
+            <a href="sampler.html" class="main-btn">
 
                 <span class="btn-icon">
                     <svg viewBox="0 0 24 24">
@@ -453,46 +430,6 @@
 
                 <span data-i18n="btnSampler">
                     聲音探索與拼貼
-                </span>
-
-            </a>
-
-
-            <!-- 原有：認識聲音素材 -->
-            <a href="intro.html" class="main-btn">
-
-                <span class="btn-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                        <path d="M8 7h8M8 11h8"/>
-                    </svg>
-                </span>
-
-                <span data-i18n="btnIntro">
-                    認識聲音素材
-                </span>
-
-            </a>
-
-
-            <!-- 原有：相褒歌拼貼 -->
-            <a href="collage.html"
-               class="main-btn secondary">
-
-                <span class="btn-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M4 8h4l2 3h4l2-3h4"/>
-                        <path d="M4 16h4l2-3h4l2 3h4"/>
-                        <circle cx="4" cy="8" r="1.5"/>
-                        <circle cx="20" cy="8" r="1.5"/>
-                        <circle cx="4" cy="16" r="1.5"/>
-                        <circle cx="20" cy="16" r="1.5"/>
-                    </svg>
-                </span>
-
-                <span data-i18n="btnCollage">
-                    進入相褒歌拼貼
                 </span>
 
             </a>
@@ -531,13 +468,9 @@
 
                 bannerDescription: '山林之聲・相褒之歌',
 
-                intro: '歡迎來到坪林相褒歌的重組活動。在這裡，你可以先認識並聆聽 MV 當中的一些聲音元素，接著進入拼貼模式，將它們重新組合成屬於你的個人相褒歌。',
+                intro: '歡迎來到坪林聲音探索與拼貼活動。在這裡，你可以聆聽坪林田野採集的聲音，切換原始與加工版本，並將喜歡的聲音素材重新組合，創作屬於自己的聲音風景。',
 
                 btnSampler: '聲音探索與拼貼',
-
-                btnIntro: '認識聲音素材',
-
-                btnCollage: '進入相褒歌拼貼',
 
                 footerWarning: '🎧 最佳體驗：建議佩戴耳機，並確認手機已解除靜音模式。',
 
@@ -549,13 +482,9 @@
 
                 bannerDescription: 'Voices of Nature · Songs of Pinglin',
 
-                intro: 'Welcome to the Pinglin Sio-Po-Kua reconstruction experience. Explore and listen to the individual sound elements from the music video, then enter collage mode to recombine them into your own interpretation of Sio-Po-Kua.',
+                intro: 'Welcome to the Pinglin sound exploration and collage experience. Listen to field recordings from Pinglin, switch between original and processed versions, and combine your favorite sounds to create your own soundscape.',
 
                 btnSampler: 'Explore & Create Sounds',
-
-                btnIntro: 'Explore the Sounds',
-
-                btnCollage: 'Enter Sio-Po-Kua Collage',
 
                 footerWarning: '🎧 For the best experience, please wear headphones and disable silent mode.',
 
