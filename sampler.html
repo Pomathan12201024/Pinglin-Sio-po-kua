@@ -250,10 +250,82 @@
         .materials-panel {
             min-height: 0;
             display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 7px;
+            overflow: hidden;
+        }
+
+        .field-materials-grid {
+            min-height: 0;
+            display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             grid-template-rows: repeat(2, minmax(0, 1fr));
             gap: 8px;
+        }
+
+        .sio-section {
+            min-width: 0;
+            padding: 5px 7px 6px;
+            border: 1.5px dashed var(--tea);
+            border-radius: 11px;
+            background: rgba(255,255,255,0.48);
             overflow: hidden;
+        }
+
+        .sio-section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 4px;
+            color: var(--forest);
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .sio-section-heading small {
+            color: var(--muted);
+            font-size: 0.58rem;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .sio-song-list {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        .sio-card {
+            min-width: 0;
+            min-height: 29px;
+            padding: 4px 2px;
+            border: 1px solid rgba(120,148,119,0.5);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--forest);
+            font-size: clamp(0.55rem, 2vw, 0.7rem);
+            font-weight: bold;
+            text-align: center;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: grab;
+        }
+
+        .sio-card.selected {
+            border: 2px solid var(--forest);
+            background: #e4eadf;
+        }
+
+        .sio-card.unavailable {
+            opacity: 0.48;
+            border-style: dashed;
+        }
+
+        .sio-card.dragging {
+            opacity: 0.65;
         }
 
         .material-card {
@@ -800,9 +872,20 @@
             .materials-panel {
                 grid-column: 2;
                 grid-row: 2;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                grid-template-rows: repeat(2, minmax(0, 1fr));
+                gap: 5px;
+            }
+
+            .field-materials-grid {
                 gap: 7px;
+            }
+
+            .sio-section {
+                padding: 4px 6px;
+            }
+
+            .sio-card {
+                min-height: 26px;
+                padding: 3px 1px;
             }
 
             .card-face img {
@@ -884,8 +967,18 @@
                 font-size: 0.7rem;
             }
 
-            .materials-panel {
+            .materials-panel,
+            .field-materials-grid {
                 gap: 5px;
+            }
+
+            .sio-section-heading {
+                margin-bottom: 2px;
+            }
+
+            .sio-card {
+                min-height: 23px;
+                font-size: 0.55rem;
             }
 
             .collage-panel {
@@ -925,7 +1018,8 @@
                 padding-right: 10px;
             }
 
-            .materials-panel {
+            .materials-panel,
+            .field-materials-grid {
                 gap: 5px;
             }
 
@@ -1094,6 +1188,9 @@
             confirm: "▶ 確認拼貼",
             stop: "■ 停止拼貼",
             remove: "移除",
+            sioSection: "相褒歌",
+            sioRule: "六段擇一",
+            sioRecording: "相褒歌錄音",
             previous: "上一步",
             skip: "略過",
             next: "下一步 →",
@@ -1104,8 +1201,9 @@
                 ["① 選擇聲音素材", "點擊素材，可以查看圖片與介紹，並播放或暫停聲音。"],
                 ["② 聆聽與認識素材", "這裡會顯示所選素材的圖片、介紹，以及播放控制。"],
                 ["③ 切換聲音版本", "在素材格子上左右滑動，即可切換原始聲音與加工版本。"],
-                ["④ 加入聲音拼貼", "長按素材並拖曳至下方拼貼區，加入當下選取的聲音版本。同一素材的原始版與加工版可以同時加入。"],
-                ["⑤ 完成你的聲音風景", "加入素材後，按下「確認拼貼」播放組合聲音。素材會自動依照原始版、加工版的順序排列，也可以在拼貼區內捲動查看。"]
+                ["④ 加入田野聲音", "長按五種田野聲音素材並拖曳至下方拼貼區。每種素材的原始版與加工版可以同時加入。"],
+                ["⑤ 選擇相褒歌", "相褒歌共有六段錄音，可以切換聆聽，但拼貼中最多只能加入其中一段。若要更換，請先移除已加入的相褒歌，再選擇另一段。"],
+                ["⑥ 完成你的聲音風景", "加入素材後，按下「確認拼貼」播放組合聲音。五種田野聲音依原始版、加工版排序；相褒歌使用所選段落的原音檔。也可以在拼貼區內捲動查看。"]
             ],
             playError: "目前無法播放這個音檔，請確認音檔路徑是否正確。",
             collageError: "拼貼音檔尚未準備完成，請確認音檔路徑。"
@@ -1129,6 +1227,9 @@
             confirm: "▶ Play Collage",
             stop: "■ Stop Collage",
             remove: "Remove",
+            sioSection: "Sio-Po-Kua Songs",
+            sioRule: "Choose one of six",
+            sioRecording: "Sio-Po-Kua recording",
             previous: "Previous",
             skip: "Skip",
             next: "Next →",
@@ -1139,8 +1240,9 @@
                 ["① Choose a Sound", "Tap a sound to view its image and description, then play or pause it."],
                 ["② Listen and Explore", "The selected sound's image, description, and playback controls appear here."],
                 ["③ Switch Sound Versions", "Swipe a sound card horizontally to switch between its original and processed versions."],
-                ["④ Add Sounds to Your Collage", "Press and hold a sound, then drag it into the collage area to add the currently selected version. You can add both the original and processed versions of the same sound."],
-                ["⑤ Create Your Soundscape", "After adding sounds, press “Play Collage” to hear them together. Sounds are automatically arranged by material, with the original version before the processed version. Scroll within the collage area to view them all."]
+                ["④ Add Field Sounds", "Press and hold any of the five field recordings, then drag it into the collage area. You can add both the original and processed versions of each field sound."],
+                ["⑤ Choose a Sio-Po-Kua Recording", "There are six recordings to preview, but you can add only one to the collage. To switch recordings, remove the one already added before choosing another."],
+                ["⑥ Create Your Soundscape", "Press “Play Collage” to hear your sounds together. The five field sounds are arranged by original and processed versions; the selected Sio-Po-Kua recording plays from its own audio file. Scroll within the collage area to view all items."]
             ],
             playError: "This audio file could not be played. Please check that the file path is correct.",
             collageError: "The collage audio is not ready. Please check the audio file paths."
@@ -1160,6 +1262,19 @@
     function materialDescription(item) {
         return currentLang === "en" ? item.descriptionEn : item.description;
     }
+
+    const sioSongs = Array.from({ length: 6 }, (_, index) => {
+        const number = index + 1;
+        return {
+            id: `sio_po_kua_${number}`,
+            type: "sio",
+            title: `相褒歌 ${number}`,
+            titleEn: `Sio-Po-Kua ${number}`,
+            description: `相褒歌第 ${number} 段田野錄音。`,
+            descriptionEn: `Sio-Po-Kua field recording ${number}.`,
+            audio: `audio/sio_po_kua_${number}.mp3`
+        };
+    });
 
     function setLang(lang) {
         if (!languageText[lang]) lang = "zh";
@@ -1207,11 +1322,22 @@
             card.querySelectorAll("img").forEach(img => img.alt = materialName(item));
         });
 
+        document.querySelectorAll(".sio-card").forEach(card => {
+            const song = sioSongs.find(item => item.id === card.dataset.id);
+            if (song) card.textContent = materialName(song);
+        });
+        updateSioCardStates();
+
         if (currentMaterial) {
             mainTitle.textContent = materialName(currentMaterial);
             mainDescription.textContent = materialDescription(currentMaterial);
-            mainImage.alt = materialName(currentMaterial);
-            versionLabel.textContent = currentVersion === "original" ? tr("original") : tr("processed");
+            if (currentMaterial.type === "sio") {
+                document.getElementById("placeholderTitle").textContent = materialName(currentMaterial);
+                document.getElementById("placeholderDescription").textContent = materialDescription(currentMaterial);
+            } else {
+                mainImage.alt = materialName(currentMaterial);
+                versionLabel.textContent = currentVersion === "original" ? tr("original") : tr("processed");
+            }
         } else {
             mainTitle.textContent = tr("notSelected");
             mainDescription.textContent = tr("selectDescription");
@@ -1326,10 +1452,11 @@
     const tourBubble = document.getElementById("tourBubble");
 
     const tourTargets = [
-        { target: "materialsPanel", placement: "top" },
+        { target: "fieldMaterialsGrid", placement: "top" },
         { target: "mainPanel", placement: "bottom" },
-        { target: "materialsPanel", placement: "top" },
+        { target: "fieldMaterialsGrid", placement: "top" },
         { target: "collagePanel", placement: "top" },
+        { target: "sioSection", placement: "top" },
         { target: "collagePanel", placement: "top" }
     ];
 
@@ -1508,38 +1635,174 @@
     ================================================= */
 
     function renderMaterials() {
-        materialsPanel.innerHTML = "";
+        materialsPanel.innerHTML = `
+            <div class="field-materials-grid" id="fieldMaterialsGrid"></div>
+            <section class="sio-section" id="sioSection">
+                <div class="sio-section-heading">
+                    <span>${tr("sioSection")}</span>
+                    <small>${tr("sioRule")}</small>
+                </div>
+                <div class="sio-song-list" id="sioSongList"></div>
+            </section>
+        `;
+
+        const fieldGrid = document.getElementById("fieldMaterialsGrid");
 
         materials.forEach(item => {
             const card = document.createElement("div");
             card.className = "material-card";
             card.dataset.id = item.id;
             card.dataset.version = "original";
-
             card.innerHTML = `
                 <div class="card-inner">
-
                     <div class="card-face card-front">
                         <img src="${item.image}" alt="${materialName(item)}">
                         <div class="card-name">${materialName(item)}</div>
                     </div>
-
                     <div class="card-face card-back">
                         <img src="${item.image}" alt="${materialName(item)}">
                         <div class="card-name">${currentLang === "en" ? `${materialName(item)} · Processed` : `${materialName(item)}・加工版`}</div>
                     </div>
-
                 </div>
-
                 <span class="flip-mark">${currentLang === "en" ? "Original" : "原始"}</span>
                 <span class="card-play">Ⅱ</span>
             `;
-
-            materialsPanel.appendChild(card);
+            fieldGrid.appendChild(card);
             attachCardEvents(card, item);
+        });
+
+        const songList = document.getElementById("sioSongList");
+        sioSongs.forEach(song => {
+            const card = document.createElement("button");
+            card.type = "button";
+            card.className = "sio-card";
+            card.dataset.id = song.id;
+            card.textContent = materialName(song);
+            card.setAttribute("aria-label", materialName(song));
+            songList.appendChild(card);
+            attachSioCardEvents(card, song);
+        });
+
+        updateSioCardStates();
+    }
+
+    function updateSioCardStates() {
+        const selectedSong = collageItems.find(item => item.type === "sio");
+        document.querySelectorAll(".sio-card").forEach(card => {
+            const isSelected = selectedSong && selectedSong.id === card.dataset.id;
+            const unavailable = selectedSong && selectedSong.id !== card.dataset.id;
+            card.classList.toggle("selected", !!isSelected);
+            card.classList.toggle("unavailable", !!unavailable);
+            card.setAttribute("aria-pressed", isSelected ? "true" : "false");
+            card.title = unavailable
+                ? (currentLang === "en"
+                    ? "Remove the selected Sio-Po-Kua recording before adding another."
+                    : "請先移除已加入的相褒歌，才能更換段落。")
+                : (sioSongs.find(song => song.id === card.dataset.id) ? materialName(sioSongs.find(song => song.id === card.dataset.id)) : "");
         });
     }
 
+    function attachSioCardEvents(card, song) {
+        let startX = 0, startY = 0, startTime = 0;
+        let active = false, longPressed = false, moved = false, dragging = false;
+        let pointerId = null, timer = null, ghost = null;
+
+        const clearState = () => {
+            clearTimeout(timer);
+            timer = null;
+            card.classList.remove("dragging");
+            dropArea.classList.remove("drag-over");
+            if (ghost) { ghost.remove(); ghost = null; }
+            dragging = false;
+        };
+
+        card.addEventListener("contextmenu", event => event.preventDefault());
+        card.addEventListener("pointerdown", event => {
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+            if (active) return;
+            event.preventDefault();
+            active = true;
+            pointerId = event.pointerId;
+            startX = event.clientX;
+            startY = event.clientY;
+            startTime = Date.now();
+            longPressed = false;
+            moved = false;
+            dragging = false;
+            try { card.setPointerCapture(event.pointerId); } catch (error) {}
+            timer = setTimeout(() => {
+                if (active && pointerId === event.pointerId) longPressed = true;
+            }, LONG_PRESS_TIME);
+        });
+
+        card.addEventListener("pointermove", event => {
+            if (!active || event.pointerId !== pointerId) return;
+            const dx = event.clientX - startX, dy = event.clientY - startY;
+            if (Math.abs(dx) > MOVE_CANCEL_DISTANCE || Math.abs(dy) > MOVE_CANCEL_DISTANCE) moved = true;
+
+            if (longPressed && moved) {
+                if (!dragging) {
+                    dragging = true;
+                    card.classList.add("dragging");
+                    ghost = document.createElement("div");
+                    ghost.className = "drag-ghost";
+                    ghost.style.width = "110px";
+                    ghost.style.height = "58px";
+                    ghost.style.display = "flex";
+                    ghost.style.alignItems = "center";
+                    ghost.style.justifyContent = "center";
+                    ghost.style.background = "white";
+                    ghost.style.color = "var(--forest)";
+                    ghost.style.fontWeight = "bold";
+                    ghost.textContent = materialName(song);
+                    document.body.appendChild(ghost);
+                }
+                if (ghost) {
+                    ghost.style.left = event.clientX + "px";
+                    ghost.style.top = event.clientY + "px";
+                }
+                const rect = dropArea.getBoundingClientRect();
+                dropArea.classList.toggle("drag-over",
+                    event.clientX >= rect.left && event.clientX <= rect.right &&
+                    event.clientY >= rect.top && event.clientY <= rect.bottom);
+            }
+        });
+
+        card.addEventListener("pointerup", event => {
+            if (!active || event.pointerId !== pointerId) return;
+            const elapsed = Date.now() - startTime;
+            const dx = event.clientX - startX, dy = event.clientY - startY;
+            active = false;
+            pointerId = null;
+            clearTimeout(timer);
+            timer = null;
+
+            if (dragging) {
+                const rect = dropArea.getBoundingClientRect();
+                const over = event.clientX >= rect.left && event.clientX <= rect.right &&
+                    event.clientY >= rect.top && event.clientY <= rect.bottom;
+                if (over) addToCollage(song, "sio");
+                clearState();
+                return;
+            }
+
+            clearState();
+            if (!longPressed && !moved && elapsed < LONG_PRESS_TIME &&
+                Math.abs(dx) < SWIPE_DISTANCE && Math.abs(dy) < MOVE_CANCEL_DISTANCE) {
+                updateMainDisplay(song, "sio");
+                togglePreview(song, "sio");
+            }
+        });
+
+        const cancel = event => {
+            if (event.pointerId !== pointerId) return;
+            active = false;
+            pointerId = null;
+            clearState();
+        };
+        card.addEventListener("pointercancel", cancel);
+        card.addEventListener("lostpointercapture", cancel);
+    }
 
     /* =================================================
        主畫面更新
@@ -1549,18 +1812,24 @@
         currentMaterial = item;
         currentVersion = version;
 
-        mainImage.src = item.image;
-        mainImage.alt = materialName(item);
-        mainImage.style.display = "block";
-
-        mainPlaceholder.style.display = "none";
+        if (item.type === "sio") {
+            mainImage.style.display = "none";
+            mainPlaceholder.style.display = "flex";
+            document.getElementById("placeholderTitle").textContent = materialName(item);
+            document.getElementById("placeholderDescription").textContent = materialDescription(item);
+            versionLabel.hidden = true;
+        } else {
+            mainImage.src = item.image;
+            mainImage.alt = materialName(item);
+            mainImage.style.display = "block";
+            mainPlaceholder.style.display = "none";
+            versionLabel.hidden = false;
+            versionLabel.textContent =
+                version === "original" ? tr("original") : tr("processed");
+        }
 
         mainTitle.textContent = materialName(item);
         mainDescription.textContent = materialDescription(item);
-
-        versionLabel.hidden = false;
-        versionLabel.textContent =
-            version === "original" ? tr("original") : tr("processed");
 
         mainPlayBtn.disabled = false;
 
@@ -1573,6 +1842,7 @@
     ================================================= */
 
     function getPreviewUrl(item, version) {
+        if (item.type === "sio") return item.audio;
         return version === "original"
             ? item.original
             : item.processed;
@@ -1926,13 +2196,13 @@
 
     function sortCollageItems() {
         collageItems.sort((a, b) => {
-            const indexA = materials.findIndex(
-                material => material.id === a.id
-            );
+            const indexA = a.type === "sio"
+                ? materials.length + sioSongs.findIndex(song => song.id === a.id)
+                : materials.findIndex(material => material.id === a.id);
 
-            const indexB = materials.findIndex(
-                material => material.id === b.id
-            );
+            const indexB = b.type === "sio"
+                ? materials.length + sioSongs.findIndex(song => song.id === b.id)
+                : materials.findIndex(material => material.id === b.id);
 
             if (indexA !== indexB) {
                 return indexA - indexB;
@@ -1957,37 +2227,36 @@
 
     function addToCollage(item, version) {
         const alreadyExists = collageItems.some(
-            selected =>
-                selected.id === item.id &&
-                selected.version === version
+            selected => selected.id === item.id && selected.version === version
         );
+        if (alreadyExists) return;
 
-        if (alreadyExists) {
+        if (item.type === "sio" && collageItems.some(selected => selected.type === "sio")) {
             return;
         }
 
         collageItems.push({
             id: item.id,
+            type: item.type || "field",
             title: item.title,
-            image: item.image,
+            titleEn: item.titleEn,
+            image: item.image || "",
             version: version,
-            audio: version === "original"
-                ? item.collageOriginal
-                : item.collageProcessed
+            audio: item.type === "sio"
+                ? item.audio
+                : (version === "original" ? item.collageOriginal : item.collageProcessed)
         });
 
         /* 自動排序 */
         sortCollageItems();
 
         const card = document.querySelector(
-            `.material-card[data-id="${item.id}"]`
+            `.material-card[data-id="${item.id}"], .sio-card[data-id="${item.id}"]`
         );
-
-        if (card) {
-            card.classList.add("selected");
-        }
+        if (card) card.classList.add("selected");
 
         renderCollage();
+        updateSioCardStates();
     }
 
 
@@ -2012,21 +2281,20 @@
             const div = document.createElement("div");
             div.className = "collage-item";
 
-            const versionText =
-                item.version === "original" ? tr("original") : tr("processedShort");
-            const sourceMaterial = materials.find(material => material.id === item.id);
+            const sourceMaterial = item.type === "sio"
+                ? sioSongs.find(song => song.id === item.id)
+                : materials.find(material => material.id === item.id);
+            const displayName = sourceMaterial ? materialName(sourceMaterial) : item.title;
+            const versionText = item.type === "sio"
+                ? tr("sioRecording")
+                : (item.version === "original" ? tr("original") : tr("processedShort"));
 
             div.innerHTML = `
-                <img src="${item.image}" alt="${sourceMaterial ? materialName(sourceMaterial) : item.title}">
+                ${item.image ? `<img src="${item.image}" alt="${displayName}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--forest);font-weight:bold;font-size:0.72rem;padding:4px;text-align:center;">${displayName}</div>`}
 
                 <div class="collage-item-info">
-                    <span class="collage-item-title">
-                        ${sourceMaterial ? materialName(sourceMaterial) : item.title}
-                    </span>
-
-                    <span class="collage-item-version">
-                        ${versionText}
-                    </span>
+                    <span class="collage-item-title">${displayName}</span>
+                    <span class="collage-item-version">${versionText}</span>
                 </div>
 
                 <button class="remove-item" aria-label="${tr("remove")}" title="${tr("remove")}">×</button>
@@ -2043,6 +2311,7 @@
             tr("count")(collageItems.length);
 
         confirmBtn.disabled = collageItems.length === 0;
+        updateSioCardStates();
     }
 
 
@@ -2059,18 +2328,16 @@
         );
 
         const card = document.querySelector(
-            `.material-card[data-id="${id}"]`
+            `.material-card[data-id="${id}"], .sio-card[data-id="${id}"]`
         );
 
         if (card) {
-            const stillSelected = collageItems.some(
-                item => item.id === id
-            );
-
+            const stillSelected = collageItems.some(item => item.id === id);
             card.classList.toggle("selected", stillSelected);
         }
 
         renderCollage();
+        updateSioCardStates();
     }
 
     clearBtn.addEventListener("click", () => {
@@ -2078,11 +2345,12 @@
 
         collageItems = [];
 
-        document.querySelectorAll(".material-card").forEach(card => {
+        document.querySelectorAll(".material-card, .sio-card").forEach(card => {
             card.classList.remove("selected");
         });
 
         renderCollage();
+        updateSioCardStates();
     });
 
 
