@@ -1482,7 +1482,7 @@
     });
 
     tourNext.addEventListener("click", () => {
-        if (currentTourStep < tourSteps.length - 1) {
+        if (currentTourStep < getTourSteps().length - 1) {
             currentTourStep++;
             showTourStep();
         } else {
