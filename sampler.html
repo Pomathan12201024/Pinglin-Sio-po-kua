@@ -67,9 +67,43 @@
         .header {
             min-height: 35px;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+        }
+
+        .header-tools {
+            justify-self: end;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-switch {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 3px;
+            border-radius: 18px;
+            background: var(--white);
+            border: 1px solid rgba(120, 148, 119, 0.35);
+        }
+
+        .lang-switch button {
+            min-width: 25px;
+            padding: 4px 5px;
+            border: 0;
+            border-radius: 14px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .lang-switch button.active {
+            background: var(--forest);
+            color: white;
         }
 
         .header a {
@@ -922,9 +956,15 @@
 
     <!-- 頁首 -->
     <header class="header" id="header">
-        <a href="index.html">← 回到主頁</a>
-        <h1>一心二葉・坪心而唱</h1>
-        <button class="help-btn" id="helpBtn" aria-label="操作說明">?</button>
+        <a href="index.html" id="backHome">← 回到主頁</a>
+        <h1 id="pageTitle">一心二葉・坪心而唱</h1>
+        <div class="header-tools">
+            <div class="lang-switch" aria-label="Language">
+                <button type="button" id="langZh" onclick="setLang('zh')">中</button>
+                <button type="button" id="langEn" onclick="setLang('en')">EN</button>
+            </div>
+            <button class="help-btn" id="helpBtn" aria-label="操作說明">?</button>
+        </div>
     </header>
 
     <!-- 主畫面 -->
@@ -939,8 +979,8 @@
 
             <div class="main-placeholder" id="mainPlaceholder">
                 <div class="placeholder-icon">♧</div>
-                <div>請點選下方素材</div>
-                <div>查看圖片與聲音介紹</div>
+                <div id="placeholderTitle">請點選下方素材</div>
+                <div id="placeholderDescription">查看圖片與聲音介紹</div>
             </div>
         </div>
 
@@ -969,7 +1009,7 @@
     <section class="collage-panel" id="collagePanel">
 
         <div class="collage-heading">
-            <h2>聲音拼貼</h2>
+            <h2 id="collageTitle">聲音拼貼</h2>
             <span id="collageCount">已放入 0 個素材</span>
         </div>
 
@@ -1028,12 +1068,172 @@
        素材資料設定
     ================================================= */
 
+
+    /* =================================================
+       中英文介面
+       與首頁共用 localStorage 的 prefLang
+    ================================================= */
+
+    const languageText = {
+        zh: {
+            backHome: "← 回到主頁",
+            pageTitle: "一心二葉・坪心而唱",
+            helpLabel: "操作說明",
+            placeholderTitle: "請點選下方素材",
+            placeholderDescription: "查看圖片與聲音介紹",
+            notSelected: "尚未選擇素材",
+            selectDescription: "選擇下方任一素材，即可在這裡查看相關介紹。",
+            original: "原始聲音",
+            processed: "加工後的聲音",
+            processedShort: "加工版",
+            play: "▶ 播放素材",
+            pause: "Ⅱ 暫停素材",
+            collage: "聲音拼貼",
+            dropHint: "長按素材並拖曳至此",
+            clear: "清空",
+            confirm: "▶ 確認拼貼",
+            stop: "■ 停止拼貼",
+            remove: "移除",
+            previous: "上一步",
+            skip: "略過",
+            next: "下一步 →",
+            finish: "完成 ✓",
+            count: n => `已放入 ${n} 個素材`,
+            step: (n, total) => `步驟 ${n} / ${total}`,
+            tour: [
+                ["① 選擇聲音素材", "點擊素材，可以查看圖片與介紹，並播放或暫停聲音。"],
+                ["② 聆聽與認識素材", "這裡會顯示所選素材的圖片、介紹，以及播放控制。"],
+                ["③ 切換聲音版本", "在素材格子上左右滑動，即可切換原始聲音與加工版本。"],
+                ["④ 加入聲音拼貼", "長按素材並拖曳至下方拼貼區，加入當下選取的聲音版本。同一素材的原始版與加工版可以同時加入。"],
+                ["⑤ 完成你的聲音風景", "加入素材後，按下「確認拼貼」播放組合聲音。素材會自動依照原始版、加工版的順序排列，也可以在拼貼區內捲動查看。"]
+            ],
+            playError: "目前無法播放這個音檔，請確認音檔路徑是否正確。",
+            collageError: "拼貼音檔尚未準備完成，請確認音檔路徑。"
+        },
+        en: {
+            backHome: "← Home",
+            pageTitle: "Pinglin Sio-Po-Kua",
+            helpLabel: "Help",
+            placeholderTitle: "Select a sound below",
+            placeholderDescription: "View its image and description",
+            notSelected: "No sound selected",
+            selectDescription: "Select any sound below to view its details here.",
+            original: "Original",
+            processed: "Processed",
+            processedShort: "Processed",
+            play: "▶ Play",
+            pause: "Ⅱ Pause",
+            collage: "Sound Collage",
+            dropHint: "Press and hold a sound, then drag it here",
+            clear: "Clear",
+            confirm: "▶ Play Collage",
+            stop: "■ Stop Collage",
+            remove: "Remove",
+            previous: "Previous",
+            skip: "Skip",
+            next: "Next →",
+            finish: "Done ✓",
+            count: n => `${n} sound${n === 1 ? "" : "s"} added`,
+            step: (n, total) => `STEP ${n} / ${total}`,
+            tour: [
+                ["① Choose a Sound", "Tap a sound to view its image and description, then play or pause it."],
+                ["② Listen and Explore", "The selected sound's image, description, and playback controls appear here."],
+                ["③ Switch Sound Versions", "Swipe a sound card horizontally to switch between its original and processed versions."],
+                ["④ Add Sounds to Your Collage", "Press and hold a sound, then drag it into the collage area to add the currently selected version. You can add both the original and processed versions of the same sound."],
+                ["⑤ Create Your Soundscape", "After adding sounds, press “Play Collage” to hear them together. Sounds are automatically arranged by material, with the original version before the processed version. Scroll within the collage area to view them all."]
+            ],
+            playError: "This audio file could not be played. Please check that the file path is correct.",
+            collageError: "The collage audio is not ready. Please check the audio file paths."
+        }
+    };
+
+    let currentLang = "zh";
+
+    function tr(key) {
+        return languageText[currentLang][key];
+    }
+
+    function materialName(item) {
+        return currentLang === "en" ? item.titleEn : item.title;
+    }
+
+    function materialDescription(item) {
+        return currentLang === "en" ? item.descriptionEn : item.description;
+    }
+
+    function setLang(lang) {
+        if (!languageText[lang]) lang = "zh";
+        currentLang = lang;
+
+        document.documentElement.lang = lang === "zh" ? "zh-TW" : "en";
+        document.title = lang === "zh"
+            ? "聲音採集與拼貼｜一心二葉・坪心而唱"
+            : "Sound Exploration & Collage | Pinglin Sio-Po-Kua";
+
+        document.getElementById("backHome").textContent = tr("backHome");
+        document.getElementById("pageTitle").textContent = tr("pageTitle");
+        document.getElementById("helpBtn").setAttribute("aria-label", tr("helpLabel"));
+        document.getElementById("placeholderTitle").textContent = tr("placeholderTitle");
+        document.getElementById("placeholderDescription").textContent = tr("placeholderDescription");
+        document.getElementById("collageTitle").textContent = tr("collage");
+        document.getElementById("clearBtn").textContent = tr("clear");
+        document.getElementById("confirmBtn").textContent = collagePlaying ? tr("stop") : tr("confirm");
+        document.getElementById("tourPrev").textContent = tr("previous");
+        document.getElementById("tourSkip").textContent = tr("skip");
+
+        document.getElementById("langZh").classList.toggle("active", lang === "zh");
+        document.getElementById("langEn").classList.toggle("active", lang === "en");
+        document.getElementById("langZh").setAttribute("aria-pressed", lang === "zh");
+        document.getElementById("langEn").setAttribute("aria-pressed", lang === "en");
+
+        try {
+            localStorage.setItem("prefLang", lang);
+        } catch (error) {
+            // 若瀏覽器不允許儲存，仍可在目前頁面切換語言。
+        }
+
+        // 更新素材卡片文字，保留目前的翻面、選取與播放狀態。
+        document.querySelectorAll(".material-card").forEach(card => {
+            const item = materials.find(material => material.id === card.dataset.id);
+            if (!item) return;
+
+            card.querySelector(".card-front .card-name").textContent = materialName(item);
+            card.querySelector(".card-back .card-name").textContent =
+                currentLang === "en" ? `${materialName(item)} · Processed` : `${materialName(item)}・加工版`;
+            card.querySelector(".flip-mark").textContent =
+                card.dataset.version === "processed"
+                    ? (currentLang === "en" ? "Processed" : "加工版")
+                    : (currentLang === "en" ? "Original" : "原始");
+            card.querySelectorAll("img").forEach(img => img.alt = materialName(item));
+        });
+
+        if (currentMaterial) {
+            mainTitle.textContent = materialName(currentMaterial);
+            mainDescription.textContent = materialDescription(currentMaterial);
+            mainImage.alt = materialName(currentMaterial);
+            versionLabel.textContent = currentVersion === "original" ? tr("original") : tr("processed");
+        } else {
+            mainTitle.textContent = tr("notSelected");
+            mainDescription.textContent = tr("selectDescription");
+        }
+
+        updatePreviewButton();
+        renderCollage();
+
+        if (tourOverlay.classList.contains("active")) {
+            showTourStep();
+        }
+    }
+
+
     const materials = [
         {
             id: "single_1",
             title: "走路聲",
+            titleEn: "Footsteps",
             image: "images/photo_2_1.jpg",
             description: "坪林田野採集的走路聲音素材。",
+            descriptionEn: "Footstep sounds recorded in the fields of Pinglin.",
             original: "audio/single_1.mp3",
             processed: "audio/processed_single_1.mp3",
             collageOriginal: "audio/collage_1_original.mp3",
@@ -1042,8 +1242,10 @@
         {
             id: "single_2",
             title: "蟲鳴鳥叫聲",
+            titleEn: "Insects and Birds",
             image: "images/photo_2_2.jpg",
             description: "坪林山林中的蟲鳴與鳥叫聲。",
+            descriptionEn: "Insect and bird sounds from the forests of Pinglin.",
             original: "audio/single_2.mp3",
             processed: "audio/processed_single_2.mp3",
             collageOriginal: "audio/collage_2_original.mp3",
@@ -1052,8 +1254,10 @@
         {
             id: "single_3",
             title: "河流聲",
+            titleEn: "River",
             image: "images/photo_2_3.jpg",
             description: "採集自坪林河流的流水聲。",
+            descriptionEn: "The sound of flowing water recorded along a river in Pinglin.",
             original: "audio/single_3.mp3",
             processed: "audio/processed_single_3.mp3",
             collageOriginal: "audio/collage_3_original.mp3",
@@ -1062,8 +1266,10 @@
         {
             id: "single_4",
             title: "採茶聲",
+            titleEn: "Tea Picking",
             image: "images/photo_2_4.jpg",
             description: "採集採摘茶葉時所產生的聲音。",
+            descriptionEn: "Sounds recorded while picking tea leaves.",
             original: "audio/single_4.mp3",
             processed: "audio/processed_single_4.mp3",
             collageOriginal: "audio/collage_4_original.mp3",
@@ -1072,8 +1278,10 @@
         {
             id: "single_5",
             title: "竹簍掃動茶葉聲",
+            titleEn: "Bamboo Basket Sweeping Tea Leaves",
             image: "images/photo_2_5.jpg",
             description: "竹簍掃動茶葉時所產生的聲音。",
+            descriptionEn: "The sound of a bamboo basket sweeping tea leaves.",
             original: "audio/single_5.mp3",
             processed: "audio/processed_single_5.mp3",
             collageOriginal: "audio/collage_5_original.mp3",
@@ -1117,38 +1325,22 @@
     const tourOverlay = document.getElementById("tourOverlay");
     const tourBubble = document.getElementById("tourBubble");
 
-    const tourSteps = [
-        {
-            target: "materialsPanel",
-            title: "① 選擇聲音素材",
-            description: "點擊素材，可以查看圖片與介紹，並播放或暫停聲音。",
-            placement: "top"
-        },
-        {
-            target: "mainPanel",
-            title: "② 聆聽與認識素材",
-            description: "這裡會顯示所選素材的圖片、介紹，以及播放控制。",
-            placement: "bottom"
-        },
-        {
-            target: "materialsPanel",
-            title: "③ 切換聲音版本",
-            description: "在素材格子上左右滑動，即可切換原始聲音與加工版本。",
-            placement: "top"
-        },
-        {
-            target: "collagePanel",
-            title: "④ 加入聲音拼貼",
-            description: "長按素材並拖曳至下方拼貼區，加入當下選取的聲音版本。同一素材的原始版與加工版可以同時加入。",
-            placement: "top"
-        },
-        {
-            target: "collagePanel",
-            title: "⑤ 完成你的聲音風景",
-            description: "加入素材後，按下「確認拼貼」播放組合聲音。素材會自動依照原始版、加工版的順序排列，也可以在拼貼區內捲動查看。",
-            placement: "top"
-        }
+    const tourTargets = [
+        { target: "materialsPanel", placement: "top" },
+        { target: "mainPanel", placement: "bottom" },
+        { target: "materialsPanel", placement: "top" },
+        { target: "collagePanel", placement: "top" },
+        { target: "collagePanel", placement: "top" }
     ];
+
+    function getTourSteps() {
+        return languageText[currentLang].tour.map((entry, index) => ({
+            target: tourTargets[index].target,
+            placement: tourTargets[index].placement,
+            title: entry[0],
+            description: entry[1]
+        }));
+    }
 
     let currentTourStep = 0;
 
@@ -1180,6 +1372,7 @@
     }
 
     function showTourStep() {
+        const tourSteps = getTourSteps();
         const step = tourSteps[currentTourStep];
         const target = document.getElementById(step.target);
 
@@ -1218,7 +1411,7 @@
         shadeBottom.style.height = (height - bottom) + "px";
 
         tourStepCount.textContent =
-            `STEP ${currentTourStep + 1} / ${tourSteps.length}`;
+            tr("step")(currentTourStep + 1, tourSteps.length);
 
         tourTitle.textContent = step.title;
         tourDescription.textContent = step.description;
@@ -1226,9 +1419,9 @@
         tourPrev.disabled = currentTourStep === 0;
 
         if (currentTourStep === tourSteps.length - 1) {
-            tourNext.textContent = "完成 ✓";
+            tourNext.textContent = tr("finish");
         } else {
-            tourNext.textContent = "下一步 →";
+            tourNext.textContent = tr("next");
         }
 
         /* 提示框位置 */
@@ -1327,18 +1520,18 @@
                 <div class="card-inner">
 
                     <div class="card-face card-front">
-                        <img src="${item.image}" alt="${item.title}">
-                        <div class="card-name">${item.title}</div>
+                        <img src="${item.image}" alt="${materialName(item)}">
+                        <div class="card-name">${materialName(item)}</div>
                     </div>
 
                     <div class="card-face card-back">
-                        <img src="${item.image}" alt="${item.title}">
-                        <div class="card-name">${item.title}・加工版</div>
+                        <img src="${item.image}" alt="${materialName(item)}">
+                        <div class="card-name">${currentLang === "en" ? `${materialName(item)} · Processed` : `${materialName(item)}・加工版`}</div>
                     </div>
 
                 </div>
 
-                <span class="flip-mark">原始</span>
+                <span class="flip-mark">${currentLang === "en" ? "Original" : "原始"}</span>
                 <span class="card-play">Ⅱ</span>
             `;
 
@@ -1357,17 +1550,17 @@
         currentVersion = version;
 
         mainImage.src = item.image;
-        mainImage.alt = item.title;
+        mainImage.alt = materialName(item);
         mainImage.style.display = "block";
 
         mainPlaceholder.style.display = "none";
 
-        mainTitle.textContent = item.title;
-        mainDescription.textContent = item.description;
+        mainTitle.textContent = materialName(item);
+        mainDescription.textContent = materialDescription(item);
 
         versionLabel.hidden = false;
         versionLabel.textContent =
-            version === "original" ? "原始聲音" : "加工後的聲音";
+            version === "original" ? tr("original") : tr("processed");
 
         mainPlayBtn.disabled = false;
 
@@ -1393,12 +1586,12 @@
             previewAudio.dataset.version === currentVersion;
 
         if (!currentMaterial) {
-            mainPlayBtn.textContent = "▶ 播放素材";
+            mainPlayBtn.textContent = tr("play");
             mainPlayBtn.classList.remove("playing");
             mainPlayBtn.disabled = true;
         } else {
             mainPlayBtn.textContent =
-                isThisPlaying ? "Ⅱ 暫停素材" : "▶ 播放素材";
+                isThisPlaying ? tr("pause") : tr("play");
 
             mainPlayBtn.classList.toggle("playing", isThisPlaying);
             mainPlayBtn.disabled = false;
@@ -1444,7 +1637,7 @@
                AbortError 不代表音檔路徑錯誤，因此不跳出錯誤視窗。 */
             if (error.name !== "AbortError") {
                 console.error("素材播放失敗：", error);
-                alert("目前無法播放這個音檔，請確認音檔路徑是否正確。");
+                alert(tr("playError"));
             }
         }
 
@@ -1707,7 +1900,7 @@
         card.dataset.version = version;
 
         const mark = card.querySelector(".flip-mark");
-        mark.textContent = isFlipped ? "加工版" : "原始";
+        mark.textContent = isFlipped ? (currentLang === "en" ? "Processed" : "加工版") : (currentLang === "en" ? "Original" : "原始");
 
         const item = materials.find(
             material => material.id === card.dataset.id
@@ -1811,7 +2004,7 @@
         if (collageItems.length === 0) {
             const hint = document.createElement("div");
             hint.className = "drop-hint";
-            hint.textContent = "長按素材並拖曳至此";
+            hint.textContent = tr("dropHint");
             dropArea.appendChild(hint);
         }
 
@@ -1820,14 +2013,15 @@
             div.className = "collage-item";
 
             const versionText =
-                item.version === "original" ? "原始聲音" : "加工版";
+                item.version === "original" ? tr("original") : tr("processedShort");
+            const sourceMaterial = materials.find(material => material.id === item.id);
 
             div.innerHTML = `
-                <img src="${item.image}" alt="${item.title}">
+                <img src="${item.image}" alt="${sourceMaterial ? materialName(sourceMaterial) : item.title}">
 
                 <div class="collage-item-info">
                     <span class="collage-item-title">
-                        ${item.title}
+                        ${sourceMaterial ? materialName(sourceMaterial) : item.title}
                     </span>
 
                     <span class="collage-item-version">
@@ -1835,7 +2029,7 @@
                     </span>
                 </div>
 
-                <button class="remove-item" aria-label="移除">×</button>
+                <button class="remove-item" aria-label="${tr("remove")}" title="${tr("remove")}">×</button>
             `;
 
             div.querySelector(".remove-item").addEventListener("click", () => {
@@ -1846,7 +2040,7 @@
         });
 
         document.getElementById("collageCount").textContent =
-            `已放入 ${collageItems.length} 個素材`;
+            tr("count")(collageItems.length);
 
         confirmBtn.disabled = collageItems.length === 0;
     }
@@ -1931,12 +2125,12 @@
             Tone.Transport.start();
 
             collagePlaying = true;
-            confirmBtn.textContent = "■ 停止拼貼";
+            confirmBtn.textContent = tr("stop");
             confirmBtn.classList.add("playing");
 
         } catch (error) {
             console.error("拼貼播放失敗：", error);
-            alert("拼貼音檔尚未準備完成，請確認音檔路徑。");
+            alert(tr("collageError"));
 
             Tone.Transport.stop();
             Tone.Transport.cancel();
@@ -1951,7 +2145,7 @@
         disposeCollagePlayers();
 
         collagePlaying = false;
-        confirmBtn.textContent = "▶ 確認拼貼";
+        confirmBtn.textContent = tr("confirm");
         confirmBtn.classList.remove("playing");
     }
 
@@ -1967,6 +2161,16 @@
     /* =================================================
        初始化
     ================================================= */
+
+    let initialLang = "zh";
+    try {
+        initialLang = localStorage.getItem("prefLang") || "zh";
+    } catch (error) {
+        initialLang = "zh";
+    }
+
+    if (!languageText[initialLang]) initialLang = "zh";
+    setLang(initialLang);
 
     renderMaterials();
     renderCollage();
