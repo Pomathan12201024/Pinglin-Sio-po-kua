@@ -1216,7 +1216,7 @@
             placeholderDescription: "View its image and description",
             notSelected: "No sound selected",
             selectDescription: "Select any sound below to view its details here.",
-            original: "Original",
+            original: "Original Audio",
             processed: "Processed",
             processedShort: "Processed",
             play: "▶ Play",
@@ -1291,6 +1291,16 @@
         document.getElementById("placeholderTitle").textContent = tr("placeholderTitle");
         document.getElementById("placeholderDescription").textContent = tr("placeholderDescription");
         document.getElementById("collageTitle").textContent = tr("collage");
+
+        // 相褒歌區塊是在 renderMaterials() 動態建立，切換語言時需同步更新。
+        const sioHeading = document.querySelector(".sio-section-heading span");
+        const sioRule = document.querySelector(".sio-section-heading small");
+        if (sioHeading) sioHeading.textContent = tr("sioSection");
+        if (sioRule) sioRule.textContent = tr("sioRule");
+
+        // 尚未選取素材時，也要更新主畫面預設的版本標籤。
+        if (!currentMaterial) versionLabel.textContent = tr("original");
+
         document.getElementById("clearBtn").textContent = tr("clear");
         document.getElementById("confirmBtn").textContent = collagePlaying ? tr("stop") : tr("confirm");
         document.getElementById("tourPrev").textContent = tr("previous");
@@ -2441,6 +2451,11 @@
     setLang(initialLang);
 
     renderMaterials();
+
+    // renderMaterials() 會新建相褒歌區塊與素材標籤，
+    // 因此在 DOM 建立後再次套用語言，確保初始狀態與主頁語言一致。
+    setLang(initialLang);
+
     renderCollage();
     updatePreviewButton();
 
